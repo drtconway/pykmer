@@ -96,8 +96,10 @@ def ffs(x):
 def lcp(k, x, y):
     "Find the length of the common prefix between 2 k-mers"
     z = x ^ y
-    v = ffs((z | (z >> 1)) ^ 0x5555555555555555)
-    return k - (v / 2)
+    if z == 0:
+        return k
+    v = 1 + ffs(z) // 2
+    return k - v
 
 def kmers(k, str, bothStrands=False):
     "Extract k-mers from a string sequence"
