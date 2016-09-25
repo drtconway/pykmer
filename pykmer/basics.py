@@ -48,3 +48,12 @@ def kmers(k, str, bothStrands=False):
             if bothStrands:
                 yield rc(k, x)
 
+def kmersWithPos(k, str, bothStrands=False):
+    "Extract k-mers and positions from a string sequence"
+    for i in range(len(str) - k + 1):
+        x = kmer(str[i:i+k])
+        if x:
+            yield (x, i)
+            if bothStrands:
+                yield (rc(k, x), -i)
+
