@@ -29,3 +29,10 @@ def read(nm):
     k = decode(itr)
     return (k, read0(itr))
 
+def probeK(nm):
+    f = open(nm, "rb")
+    bs = bytearray(f.read(64))
+    f.close()
+    itr = bs.__iter__()
+    k = decode(itr)
+    return k
