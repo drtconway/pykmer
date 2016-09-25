@@ -1,4 +1,12 @@
 
+# Some useful constants
+m1 = 0x5555555555555555 # 01010101...
+m2 = 0x3333333333333333 # 00110011...
+m3 = 0x0F0F0F0F0F0F0F0F # 00001111...
+m4 = 0x00FF00FF00FF00FF # 0818...
+m5 = 0x0000FFFF0000FFFF # 016116...
+m6 = 0x00000000FFFFFFFF # 032132
+
 def readFasta(file):
     "Read a FASTA file, and generate (name, sequence) tuples"
     nm = None
@@ -46,52 +54,55 @@ def render(k, x):
         x >>= 2
     return ''.join(r[::-1])
 
+def rev(x):
+    "Reverse the bit-pairs in an integer"
+    x = ((x >> 2) & m2) | ((x & m2) << 2)
+    x = ((x >> 4) & m3) | ((x & m3) << 4)
+    x = ((x >> 8) & m4) | ((x & m4) << 8)
+    x = ((x >> 16) & m5) | ((x & m5) << 16)
+    x = ((x >> 32) & m6) | ((x & m6) << 32)
+    return x
+
 def rc(k, x):
     "Compute the reverse complement of a k-mer"
-    y = 0
-    x = ~x
-    for i in range(k):
-        y = (y << 2) | (x & 3)
-        x >>= 2
-    return y
-
-def popcount(x):
-    "Population counting the slow way"
-    c = 0
-    while x > 0:
-        c += (x & 1)
-        x >>= 1
-    return c
-
-pops = bytearray([popcount(i) for i in range(65536)])
+    return rev(~x) >> (64 - 2*k)
 
 def popcnt(x):
-    "Faster population counting"
-    c = 0
-    while x > 0:
-        c += pops[x & 65535]
-        x >>= 16
-    return c
+    "Compute the number of set bits in a 64-bit integer"
+    x = (x & m1) + ((x >> 1) & m1)
+    x = (x & m2) + ((x >> 2) & m2)
+    x = (x & m3) + ((x >> 4) & m3)
+    x = (x & m4) + ((x >> 8) & m4)
+    x = (x & m5) + ((x >> 16) & m5)
+    x = (x & m6) + ((x >> 32) & m6)
+    return x & 0x7F
 
 def ham(x, y):
     "Compute the hamming distance between two k-mers."
     z = x ^ y
     # NB: if k > 32, the constant below will need extending.
-    v = (z | (z >> 1)) & 0x5555555555555555
+    v = (z | (z >> 1)) & m1
     return popcnt(v)
 
 def ffs(x):
     "Find the position of the most significant bit"
-    l = 0
-    h = 63
-    while l < h:
-        m = (l + h) // 2
-        y = (x >> m)
-        if y > 0:
-            l = m + 1
-        else:
-            h = m
-    return l
+    r = (x > 0xFFFFFFFF) << 5
+    x >>= r
+    s = (x > 0xFFFF) << 4
+    x >>= s
+    r |= s
+    s = (x > 0xFF) << 3
+    x >>= s
+    r |= s
+    s = (x > 0xF) << 2
+    x >>= s
+    r |= s
+    s = (x > 0x3) << 1
+    x >>= s
+    r |= s
+    r |= (x >> 1)
+    return r
+
 
 def lcp(k, x, y):
     "Find the length of the common prefix between 2 k-mers"
