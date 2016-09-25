@@ -12,7 +12,7 @@ def readFasta(file):
             seq = []
         else:
             seq.append(l)
-    if nm is not Null:
+    if nm is not None:
         yield (nm, ''.join(seq))
 
 def readFastq(file):
