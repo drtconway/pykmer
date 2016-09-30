@@ -1,4 +1,4 @@
-from pykmer.bits import rev, popcnt, ffs
+from pykmer.bits import ffs, rev, popcnt, m1
 
 nuc = { 'A':0, 'a':0, 'C':1, 'c':1, 'G':2, 'g':2, 'T':3, 't':3 }
 

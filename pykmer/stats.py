@@ -8,8 +8,32 @@ def factorial(n):
 
 small = [math.log(factorial(n)) for n in range(25)]
 
-def logGamma(n):
-    return n * math.log(n) - n - 0.5*math.log(n/(2*math.pi)) + 1.0/(12*n) - 1.0/(360*n*n*n) + 1.0/(1260*math.pow(n,5))
+B2k = {0:   1.0,
+       1:   -0.5,
+       2:   1.0/6.0,
+       4:   -1.0/30.0,
+       6:   1.0/42.0,
+       8:   -1.0/30.0,
+       10:  5.0/66.0,
+       12:  -691.0/2730.0,
+       14:  7.0/6.0,
+       16:  -3617.0/510.0,
+       18:  43867.0/798.0,
+       20:  -174611.0/330.0}
+
+def logGamma(x):
+    if x < 0:
+        return math.log(math.pi) + logGamma(1 - x) - math.log(math.sin(math.pi*x))
+    if x < 7:
+        n = 7 - int(x)
+        p = 1
+        for k in range(0, n):
+            p *= (x + k)
+        return logGamma(x + n) - math.log(p)
+    s = 0
+    for k in range(1, 11):
+        s += B2k[2*k] / (2*k * (2*k - 1)) * math.pow(x, -2*k)
+    return (x - 0.5)*math.log(x) - x + 0.5*math.log(2*math.pi) + x*s
 
 def logFac(n):
     if n < len(small):
@@ -33,6 +57,39 @@ def logChoose(n, k):
     if k == 0 or k == n:
         return 0
     return logFac(n) - (logFac(n - k) + logFac(k))
+
+def logLowerGamma(a, x):
+    lx = math.log(x)
+    ls = None
+    for n in range(2000):
+        if ls is None:
+            ls = n*lx + logGamma(a) - logGamma(a + n + 1)
+        else:
+            v = n*lx + logGamma(a) - logGamma(a + n + 1)
+            if ls - v > 50:
+                break
+            ls = logAdd(ls, v)
+    return a*lx + ls - x
+
+def logGammaP(a, x):
+    return logLowerGamma(a, x) - logGamma(a)
+
+def gammaP(a, x):
+    return math.exp(logGammaP(a, x))
+
+def logGammaQ(a, x):
+    return math.log1p(-gammaP(a, x))
+
+def gammaQ(a, x):
+    return 1 - gammaP(a, x)
+
+def normalCDF(x):
+    if x == 0:
+        return 0.5
+    elif x > 0:
+        return 0.5 + 0.5 * gammaP(0.5, 0.5*x*x)
+    else:
+        return 0.5 - 0.5 * gammaP(0.5, 0.5*x*x)
 
 def pdf2cdf(xs):
     "Convert the PDF P(X==i) to the CDF P(X<i)"
@@ -68,11 +125,21 @@ def ksDistance2(l, r):
         dr = max(dr, y - x)
     return (dl, dr)
 
-def chi2LogPval(n, x):
+def logChi2CDF(n, x):
     x = float(x)
     if n & 1:
         # odd...
-        raise "xxx"
+        m = (n - 1)/2
+        lu = 0
+        ls = None
+        for i in range(1, m):
+            lu += math.log(x/(2*i + 1))
+            if ls is None:
+                ls = lu
+            else:
+                ls = logAdd(ls, lu)
+        s = math.exp(ls)
+        return logAdd(math.log(2 - 2*normalCDF(math.sqrt(x))), math.log(math.sqrt(2*x/math.pi)) + ls - x/2)
     else:
         # even...
         m = n/2 - 1
@@ -86,5 +153,24 @@ def chi2LogPval(n, x):
                 ls = logAdd(ls, lu)
         return ls - x/2
 
-def chi2Pval(n, x):
-    return math.exp(chi2LogPval(n, x))
+def chi2CDF(n, x):
+    x = float(x)
+    if n & 1:
+        # odd...
+        m = (n - 1)/2
+        u = 1.0
+        s = 0
+        for i in range(1, m):
+            u *= x/(2*i + 1)
+            s += u
+        return 2 - 2*normalCDF(math.sqrt(x)) \
+                 + math.sqrt(2*x/math.pi) * math.exp(-x/2.0) * s
+    else:
+        # even...
+        m = n/2 - 1
+        u = 1.0
+        s = 0
+        for i in range(1, m+1):
+            u *= x/(2*i)
+            s += u
+        return s * math.exp(-x/2.0)
