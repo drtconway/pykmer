@@ -5,10 +5,12 @@ def write(k, xs, nm):
         bs = bytearray(encode(k))
         f.write(bs)
         p = 0
-        for x in xs:
+        for (x,c) in xs:
             assert x == 0 or p < x
             d = x - p
             bs = bytearray(encode(d))
+            f.write(bs)
+            bs = bytearray(encode(c))
             f.write(bs)
             p = x
 
@@ -17,7 +19,8 @@ def read0(itr):
     while True:
         try:
             x += decode(itr)
-            yield x
+            c = decode(itr)
+            yield (x,c)
         except StopIteration:
             return
 
