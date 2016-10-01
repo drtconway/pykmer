@@ -1,5 +1,6 @@
 from codec8 import encode, decode
 import pykmer.container as container
+from pykmer.exceptions import MetaDataIncompatible
 
 meta = {
     'type' : 'k-mer set',
@@ -7,9 +8,14 @@ meta = {
     'K' : None
 }
 
-def write(k, xs, nm):
+def write(K, xs, nm, extra = None):
     m = meta.copy()
-    m['K'] = k
+    m['K'] = K
+    if extra is not None:
+        for (k, v) in extra.items():
+            if k in m:
+                raise MetaDataIncompatible(k, m[k], v)
+            m[k] = v
     f = container.make(nm, m)
     p = 0
     for x in xs:

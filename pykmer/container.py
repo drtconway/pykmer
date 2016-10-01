@@ -1,6 +1,7 @@
 from pykmer.codec8 import encode, decode
 from pykmer.exceptions import BadCookie, BadMetaData, MetaDataIncompatible, MetaDataMissing
 
+import math
 import sys
 
 cookie = "TCF"
@@ -38,6 +39,24 @@ def getMeta(itr):
     t = chr(itr.next())
     if t == 'Z':
         return decode(itr)
+    if t == 'z':
+        return -decode(itr)
+    if t == 'F':
+        m = decode(itr)
+        e = decode(itr)
+        return float(m) * 2**e
+    if t == 'G':
+        m = decode(itr)
+        e = -decode(itr)
+        return float(m) * 2**e
+    if t == 'f':
+        m = -decode(itr)
+        e = decode(itr)
+        return float(m) * 2**e
+    if t == 'g':
+        m = -decode(itr)
+        e = -decode(itr)
+        return float(m) * 2**e
     if t == 'S':
         l = decode(itr)
         xs = getBytes(l, itr)
@@ -59,9 +78,51 @@ def getMeta(itr):
 
 def putMeta(f, itm):
     if type(itm) == type(int(1)) or type(itm) == type(long(1)):
-        f.write('Z')
-        bs = bytearray(encode(itm))
-        f.write(bs)
+        if itm >= 0:
+            f.write('Z')
+            bs = bytearray(encode(itm))
+            f.write(bs)
+        else:
+            f.write('z')
+            bs = bytearray(encode(-itm))
+            f.write(bs)
+    elif type(itm) == type(float(0)):
+        if itm >= 0.0:
+            (m, e) = math.frexp(itm)
+            n = 0
+            while int(m * 2**n) != m * 2**n:
+                n += 1
+            e -= n
+            if e >= 0:
+                f.write('F')
+                bs = bytearray(encode(int(m * 2**n)))
+                f.write(bs)
+                bs = bytearray(encode(e))
+                f.write(bs)
+            else:
+                f.write('G')
+                bs = bytearray(encode(int(m * 2**n)))
+                f.write(bs)
+                bs = bytearray(encode(-e))
+                f.write(bs)
+        else:
+            (m, e) = math.frexp(-itm)
+            n = 0
+            while int(m * 2**n) != m * 2**n:
+                n += 1
+            e -= n
+            if e >= 0:
+                f.write('f')
+                bs = bytearray(encode(int(m * 2**n)))
+                f.write(bs)
+                bs = bytearray(encode(e))
+                f.write(bs)
+            else:
+                f.write('g')
+                bs = bytearray(encode(int(m * 2**n)))
+                f.write(bs)
+                bs = bytearray(encode(-e))
+                f.write(bs)
     elif type(itm) == type(''):
         f.write('S')
         bs = bytearray(encode(len(itm)))
@@ -71,7 +132,7 @@ def putMeta(f, itm):
         f.write('T')
         bs = bytearray(encode(len(itm)))
         f.write(bs)
-        for i in range(len(tim)):
+        for i in range(len(itm)):
             putMeta(f, itm[i])
     elif type(itm) == type({}):
         f.write('D')
