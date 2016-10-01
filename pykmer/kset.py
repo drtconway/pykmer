@@ -1,16 +1,23 @@
 from codec8 import encode, decode
+import pykmer.container as container
+
+meta = {
+    'type' : 'k-mer set',
+    'version' : 20160930,
+    'K' : None
+}
 
 def write(k, xs, nm):
-    with open(nm, "wb") as f:
-        bs = bytearray(encode(k))
+    m = meta.copy()
+    m['K'] = k
+    f = container.make(nm, m)
+    p = 0
+    for x in xs:
+        assert x == 0 or p < x
+        d = x - p
+        bs = bytearray(encode(d))
         f.write(bs)
-        p = 0
-        for x in xs:
-            assert x == 0 or p < x
-            d = x - p
-            bs = bytearray(encode(d))
-            f.write(bs)
-            p = x
+        p = x
 
 def read0(itr):
     x = 0
@@ -22,17 +29,9 @@ def read0(itr):
             return
 
 def read(nm):
-    f = open(nm, "rb")
-    bs = bytearray(f.read())
-    f.close()
-    itr = bs.__iter__()
-    k = decode(itr)
-    return (k, read0(itr))
+    (m, itr) = container.probe(nm, meta)
+    return (m, read0(itr))
 
 def probeK(nm):
-    f = open(nm, "rb")
-    bs = bytearray(f.read(64))
-    f.close()
-    itr = bs.__iter__()
-    k = decode(itr)
-    return k
+    (m, itr) = container.probe(nm, meta)
+    return m['K']
