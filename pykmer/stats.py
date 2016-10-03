@@ -174,3 +174,24 @@ def chi2CDF(n, x):
             u *= x/(2*i)
             s += u
         return s * math.exp(-x/2.0)
+
+def logChi2Crit(n, conf):
+    h = 2 * n
+    while True:
+        pv0 = logChi2CDF(n, h)
+        if pv0 < conf:
+            break
+        h *= 2
+    l = 0
+    j = 0
+    while l < h:
+        m = (l + h) / 2.0
+        pv0 = logChi2CDF(n, m)
+        if pv0 < conf:
+            h = m - 0.001
+        else:
+            l = m + 0.001
+        j += 1
+        if j > 100:
+            raise StopIteration
+    return l

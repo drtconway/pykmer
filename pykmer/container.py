@@ -89,37 +89,33 @@ def putMeta(f, itm):
     elif type(itm) == type(float(0)):
         if itm >= 0.0:
             (m, e) = math.frexp(itm)
-            n = 0
-            while int(m * 2**n) != m * 2**n:
-                n += 1
-            e -= n
+            m = long(m * 2**40)
+            e -= 40
             if e >= 0:
                 f.write('F')
-                bs = bytearray(encode(int(m * 2**n)))
+                bs = bytearray(encode(m))
                 f.write(bs)
                 bs = bytearray(encode(e))
                 f.write(bs)
             else:
                 f.write('G')
-                bs = bytearray(encode(int(m * 2**n)))
+                bs = bytearray(encode(m))
                 f.write(bs)
                 bs = bytearray(encode(-e))
                 f.write(bs)
         else:
             (m, e) = math.frexp(-itm)
-            n = 0
-            while int(m * 2**n) != m * 2**n:
-                n += 1
-            e -= n
+            m = long(m * 2**40)
+            e -= 40
             if e >= 0:
                 f.write('f')
-                bs = bytearray(encode(int(m * 2**n)))
+                bs = bytearray(encode(m))
                 f.write(bs)
                 bs = bytearray(encode(e))
                 f.write(bs)
             else:
                 f.write('g')
-                bs = bytearray(encode(int(m * 2**n)))
+                bs = bytearray(encode(m))
                 f.write(bs)
                 bs = bytearray(encode(-e))
                 f.write(bs)

@@ -109,3 +109,8 @@ def test_logChi2CDF():
     assert about_equal(ps.logChi2CDF(10, 25), -5.2314991670153032643497681, 5)
     assert about_equal(ps.logChi2CDF(11, 25), -4.6976494528024916874642258, 5)
     assert about_equal(ps.logChi2CDF(12, 25), -4.2115837104847466676460499, 5)
+
+def test_logChi2Crit():
+    assert about_equal(ps.logChi2Crit(10, math.log(0.01)), 23.5, 3)
+    assert about_equal(ps.logChi2Crit(10, math.log(0.001)), 29.6, 3)
+    assert about_equal(ps.logChi2Crit(10, math.log(0.0001)), 35.6, 3)

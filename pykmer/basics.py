@@ -19,6 +19,28 @@ def render(k, x):
         x >>= 2
     return ''.join(r[::-1])
 
+fas = [
+    '*', # 0000
+    'A', # 0001
+    'C', # 0010
+    'M', # 0011
+    'G', # 0100
+    'R', # 0101
+    'S', # 0110
+    'V', # 0111
+    'T', # 1000
+    'W', # 1001
+    'Y', # 1010
+    'H', # 1011
+    'K', # 1100
+    'D', # 1101
+    'B', # 1110
+    'N'  # 1111
+]
+
+def fasta(ind):
+    return fas[ind]
+
 def rc(k, x):
     "Compute the reverse complement of a k-mer"
     return rev(~x) >> (64 - 2*k)

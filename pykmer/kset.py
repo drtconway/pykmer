@@ -13,7 +13,7 @@ def write(K, xs, nm, extra = None):
     m['K'] = K
     if extra is not None:
         for (k, v) in extra.items():
-            if k in m:
+            if k in m and m[k] != v:
                 raise MetaDataIncompatible(k, m[k], v)
             m[k] = v
     f = container.make(nm, m)
