@@ -126,6 +126,11 @@ def ksDistance2(l, r):
     return (dl, dr)
 
 def logChi2CDF(n, x):
+
+    lcdf = min(0, logLowerGamma(n/2.0, x/2.0) - logGamma(n/2.0))
+    if lcdf < -1e-12:
+        return math.log1p(-math.exp(lcdf))
+
     x = float(x)
     if n & 1:
         # odd...
@@ -151,7 +156,7 @@ def logChi2CDF(n, x):
                 ls = lu
             else:
                 ls = logAdd(ls, lu)
-        return ls - x/2
+        return min(0, ls - x/2)
 
 def chi2CDF(n, x):
     x = float(x)
