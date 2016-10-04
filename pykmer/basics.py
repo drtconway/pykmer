@@ -71,11 +71,12 @@ def kmers(k, str, bothStrands=False):
                 yield rc(k, x)
 
 def kmersWithPos(k, str, bothStrands=False):
-    "Extract k-mers and positions from a string sequence"
+    "Extract k-mers and positions (1-based, negative denoting rc-strand) from a string sequence"
     for i in range(len(str) - k + 1):
+        j = i + 1
         x = kmer(str[i:i+k])
         if x:
-            yield (x, i)
+            yield (x, j)
             if bothStrands:
-                yield (rc(k, x), -i)
+                yield (rc(k, x), -j)
 
