@@ -27,7 +27,7 @@ class MetaDataIncompatible(Exception):
         self.v1 = v1
 
     def __str__(self):
-        return 'missing metadata: %s - %s / %s' % (self.nm, self.v0, self.v1)
+        return 'incompatible metadata: %s - %s / %s' % (self.nm, self.v0, self.v1)
 
 class MismatchedK(Exception):
     def __init__(self, k1, k2):

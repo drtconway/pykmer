@@ -39,6 +39,8 @@ fas = [
 ]
 
 def fasta(ind):
+    """Convert a 4-bit indicator variable representation
+     of a base combination to the 16-letter FASTA alphabet"""
     return fas[ind]
 
 def rc(k, x):
