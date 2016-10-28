@@ -1,4 +1,5 @@
 import math
+import sys
 
 def factorial(n):
     r = 1
@@ -127,9 +128,10 @@ def ksDistance2(l, r):
 
 def logChi2CDF(n, x):
 
-    lcdf = min(0, logLowerGamma(n/2.0, x/2.0) - logGamma(n/2.0))
-    if lcdf < -1e-12:
-        return math.log1p(-math.exp(lcdf))
+    if n < 10:
+        lcdf = min(0, logLowerGamma(n/2.0, x/2.0) - logGamma(n/2.0))
+        if lcdf < -1e-12:
+            return math.log1p(-math.exp(lcdf))
 
     x = float(x)
     if n & 1:
@@ -137,12 +139,14 @@ def logChi2CDF(n, x):
         m = (n - 1)/2
         lu = 0
         ls = None
-        for i in range(1, m):
-            lu += math.log(x/(2*i + 1))
+        i = 0
+        while i <= m - 1:
             if ls is None:
                 ls = lu
             else:
                 ls = logAdd(ls, lu)
+            i += 1
+            lu += math.log(x/(2*i + 1))
         s = math.exp(ls)
         return logAdd(math.log(2 - 2*normalCDF(math.sqrt(x))), math.log(math.sqrt(2*x/math.pi)) + ls - x/2)
     else:
@@ -150,12 +154,14 @@ def logChi2CDF(n, x):
         m = n/2 - 1
         lu = 0.0
         ls = None
-        for i in range(1, m+1):
-            lu += math.log(x/(2*i))
+        i = 0
+        while i <= m:
             if ls is None:
                 ls = lu
             else:
                 ls = logAdd(ls, lu)
+            i += 1
+            lu += math.log(x/(2*i))
         return min(0, ls - x/2)
 
 def chi2CDF(n, x):
