@@ -9,6 +9,7 @@ meta = {
 }
 
 def write(K, xs, nm, extra = None):
+    "write a sorted sequence of kmers in a compressed format"
     m = meta.copy()
     m['K'] = K
     if extra is not None:
@@ -35,6 +36,7 @@ def read0(itr):
             return
 
 def read(nm):
+    "read a sorted sequence of kmers from a compressed format"
     (m, itr) = container.probe(nm, meta)
     return (m, read0(itr))
 

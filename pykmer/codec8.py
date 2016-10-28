@@ -1,5 +1,6 @@
 
 def encode(x):
+    "encode an integer using a 7-bit+continuation-bit encodeing"
     r = []
     while True:
         r.append(x & 127)
@@ -12,6 +13,7 @@ def encode(x):
     return r
 
 def decode(itr):
+    "dencode an integer from a 7-bit+continuation-bit encodeing"
     r = 0
     x = itr.next()
     r = (x & 127)
