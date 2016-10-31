@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 class PyTest(TestCommand):
@@ -19,7 +19,9 @@ setup(name='pykmer',
         author='Tom Conway',
         author_email='tconway@au1.ibm.com',
         license='Apache2',
-        packages=['pykmer'],
+        keywords='bioinformatics genomics pathogenomics',
+        packages=find_packages(),
+        install_requires=['docopt'],
         tests_require=['pytest'],
         cmdclass = {'test': PyTest},
         zip_safe=False)
