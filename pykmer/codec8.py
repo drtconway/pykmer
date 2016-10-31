@@ -8,8 +8,11 @@ def encode(x):
         if x == 0:
             break
     r = r[::-1]
-    for i in range(len(r) - 1):
+    n = len(r) - 1
+    i = 0
+    while i < n:
         r[i] |= 128
+        i += 1
     return r
 
 def decode(itr):
