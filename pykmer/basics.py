@@ -74,12 +74,13 @@ def fnv(x, s):
 
 def kmers(k, seq, bothStrands=False):
     "Extract k-mers from a string sequence"
+    z = len(seq)
     msk = (1 << (2*k)) - 1
     i = 0
     j = 0
     x = 0
-    while i + k <= len(seq):
-        while i + j < len(seq) and j < k:
+    while i + k <= z:
+        while i + j < z and j < k:
             b = nuc.get(seq[i+j], 4)
             if b == 4:
                 i += j + 1
@@ -98,12 +99,13 @@ def kmers(k, seq, bothStrands=False):
 
 def kmersWithPos(k, seq, bothStrands=False):
     "Extract k-mers and positions (1-based, negative denoting rc-strand) from a string sequence"
+    z = len(seq)
     msk = (1 << (2*k)) - 1
     i = 0
     j = 0
     x = 0
-    while i + k <= len(seq):
-        while i + j < len(seq) and j < k:
+    while i + k <= z:
+        while i + j < z and j < k:
             b = nuc.get(seq[i+j], 4)
             if b == 4:
                 i += j + 1
