@@ -72,22 +72,51 @@ def fnv(x, s):
         x >>= 8
     return h & 0x1FFFFFFFFFFFFFFF
 
-def kmers(k, str, bothStrands=False):
+def kmers(k, seq, bothStrands=False):
     "Extract k-mers from a string sequence"
-    for i in range(len(str) - k + 1):
-        x = kmer(str[i:i+k])
-        if x:
+    msk = (1 << (2*k)) - 1
+    i = 0
+    j = 0
+    x = 0
+    while i + k <= len(seq):
+        while i + j < len(seq) and j < k:
+            b = nuc.get(seq[i+j], 4)
+            if b == 4:
+                i += j + 1
+                j = 0
+                x = 0
+            else:
+                x = (x << 2) | b
+                j += 1
+        if j == k:
+            x &= msk
             yield x
             if bothStrands:
                 yield rc(k, x)
+            j -= 1
+        i += 1
 
-def kmersWithPos(k, str, bothStrands=False):
+def kmersWithPos(k, seq, bothStrands=False):
     "Extract k-mers and positions (1-based, negative denoting rc-strand) from a string sequence"
-    for i in range(len(str) - k + 1):
-        j = i + 1
-        x = kmer(str[i:i+k])
-        if x:
-            yield (x, j)
+    msk = (1 << (2*k)) - 1
+    i = 0
+    j = 0
+    x = 0
+    while i + k <= len(seq):
+        while i + j < len(seq) and j < k:
+            b = nuc.get(seq[i+j], 4)
+            if b == 4:
+                i += j + 1
+                j = 0
+                x = 0
+            else:
+                x = (x << 2) | b
+                j += 1
+        if j == k:
+            x &= msk
+            yield (x, i+1)
             if bothStrands:
-                yield (rc(k, x), -j)
+                yield (rc(k, x), -(i+1))
+            j -= 1
+        i += 1
 

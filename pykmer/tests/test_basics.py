@@ -69,3 +69,14 @@ def test_lcp():
             break
     j = basics.lcp(k, x, y)
     assert h == j
+
+def test_kmers():
+    s = "CCTCGTACGCCATATTTTCGCATTTCACGTACGTATTGTTTTTGCAACATAATTACCTATTCTCTTTTGGGGGGGGTTTTAGGCATTCCATTTAATNGCTTTTCTTTTAATGCATGGAGTTTTTCCCATTCATCCTTTGATATATTATCTTTACTTGCTTCGAAGTCTNTTGCTGTGAGATGTATATCTTCTGGATGGATTTGTTTACGTTCTTTTGTTACTGGATCTATAGTAAATGGAATCATTTCCTT"
+    k = 25
+    xs = list(basics.kmers(k, s, False))
+    ys = []
+    for i in range(len(s) - k + 1):
+        y = basics.kmer(s[i:i+k])
+        if y is not None:
+            ys.append(y)
+    assert xs == ys
