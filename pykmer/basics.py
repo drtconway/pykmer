@@ -63,6 +63,15 @@ def lcp(k, x, y):
     v = 1 + ffs(z) // 2
     return k - v
 
+def fnv(x, s):
+    "Compute a FNV hash of a k-mer, returning least significant 61 bits"
+    h = s + 0xcbf29ce484222325
+    for i in range(8):
+        h ^= (x & 0xff)
+        h *= 0x100000001b3
+        x >>= 8
+    return h & 0x1FFFFFFFFFFFFFFF
+
 def kmers(k, str, bothStrands=False):
     "Extract k-mers from a string sequence"
     for i in range(len(str) - k + 1):
