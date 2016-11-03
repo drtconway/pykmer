@@ -34,7 +34,6 @@ def encodeInto(x, r):
         i -= 1
         m = 128
         n -= 1
-    return v
 
 def decode(itr):
     "dencode an integer from a 7-bit+continuation-bit encodeing"
