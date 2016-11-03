@@ -1,6 +1,8 @@
-from codec8 import encode, decode
+from codec8 import encodeInto, decode
 import pykmer.container as container
 from exceptions import MetaDataIncompatible
+
+import array
 
 meta = {
     'type' : 'k-mer frequency set',
@@ -20,14 +22,18 @@ def write(k, xs, nm, extra = None):
             m[k] = v
     f = container.make(nm, m)
     p = 0
+    s = [0 for i in range(9)]
     for (x,c) in xs:
         assert x == 0 or p < x
         d = x - p
-        bs = bytearray(encode(d))
-        f.write(bs)
-        bs = bytearray(encode(c))
-        f.write(bs)
+        bs = array.array('B')
+        v = encodeInto(d, bs)
+        s[v] += 1
+        v = encodeInto(c, bs)
+        s[v] += 1
+        bs.tofile(f)
         p = x
+    print s
 
 def read0(itr):
     x = 0

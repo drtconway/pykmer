@@ -15,6 +15,27 @@ def encode(x):
         i += 1
     return r
 
+def encodeInto(x, r):
+    "encode an integer using a 7-bit+continuation-bit encodeing into an existing list"
+    n = 0
+    y = x
+    while True:
+        n += 1
+        y >>= 7
+        r.append(0)
+        if y == 0:
+            break
+    v = n
+    i = -1
+    m = 0
+    while n > 0:
+        r[i] = (x & 127) | m
+        x >>= 7
+        i -= 1
+        m = 128
+        n -= 1
+    return v
+
 def decode(itr):
     "dencode an integer from a 7-bit+continuation-bit encodeing"
     r = 0
