@@ -1,6 +1,7 @@
 from pykmer.codec8 import encode, decode
 from pykmer.exceptions import BadCookie, BadMetaData, MetaDataIncompatible, MetaDataMissing
 
+import array
 import math
 import sys
 
@@ -9,12 +10,27 @@ cookie = "TCF"
 class FileBytes:
     def __init__(self, f):
         self.f = f
+        self.eof = False
+        self.buf = array.array('B')
+        self.z = len(self.buf)
+        self.itr = 0
 
     def next(self):
-        b = self.f.read(1)
-        if len(b) != 1:
-            raise StopIteration
-        return ord(b[0])
+        while self.itr == self.z:
+            if self.eof:
+                raise StopIteration
+            s = self.f.read(4096)
+            if len(s) < 4096:
+                self.eof = True
+            self.itr = 0
+            self.buf = array.array('B')
+            self.buf.fromstring(s)
+            self.z = len(self.buf)
+
+        if self.itr < self.z:
+            x = self.buf[self.itr]
+            self.itr += 1
+            return x
 
 def getBytes(n, itr):
     xs = []
