@@ -14,7 +14,7 @@ def kmer(seq):
 def render(k, x):
     "Turn an integer k-mer in to a string"
     r = []
-    for i in range(k):
+    for i in xrange(k):
         r.append("ACGT"[x&3])
         x >>= 2
     return ''.join(r[::-1])
@@ -66,7 +66,7 @@ def lcp(k, x, y):
 def fnv(x, s):
     "Compute a FNV hash of a k-mer, returning least significant 61 bits"
     h = s + 0xcbf29ce484222325
-    for i in range(8):
+    for i in xrange(8):
         h ^= (x & 0xff)
         h *= 0x100000001b3
         x >>= 8

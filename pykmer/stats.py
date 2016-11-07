@@ -3,11 +3,11 @@ import sys
 
 def factorial(n):
     r = 1
-    for i in range(2, n+1):
+    for i in xrange(2, n+1):
         r *= i
     return r
 
-small = [math.log(factorial(n)) for n in range(25)]
+small = [math.log(factorial(n)) for n in xrange(25)]
 
 B2k = {0:   1.0,
        1:   -0.5,
@@ -28,11 +28,11 @@ def logGamma(x):
     if x < 7:
         n = 7 - int(x)
         p = 1
-        for k in range(0, n):
+        for k in xrange(0, n):
             p *= (x + k)
         return logGamma(x + n) - math.log(p)
     s = 0
-    for k in range(1, 11):
+    for k in xrange(1, 11):
         s += B2k[2*k] / (2*k * (2*k - 1)) * math.pow(x, -2*k)
     return (x - 0.5)*math.log(x) - x + 0.5*math.log(2*math.pi) + x*s
 
@@ -62,7 +62,7 @@ def logChoose(n, k):
 def logLowerGamma(a, x):
     lx = math.log(x)
     ls = None
-    for n in range(2000):
+    for n in xrange(2000):
         if ls is None:
             ls = n*lx + logGamma(a) - logGamma(a + n + 1)
         else:
@@ -171,7 +171,7 @@ def chi2CDF(n, x):
         m = (n - 1)/2
         u = 1.0
         s = 0
-        for i in range(1, m):
+        for i in xrange(1, m):
             u *= x/(2*i + 1)
             s += u
         return 2 - 2*normalCDF(math.sqrt(x)) \
@@ -181,7 +181,7 @@ def chi2CDF(n, x):
         m = n/2 - 1
         u = 1.0
         s = 0
-        for i in range(1, m+1):
+        for i in xrange(1, m+1):
             u *= x/(2*i)
             s += u
         return s * math.exp(-x/2.0)

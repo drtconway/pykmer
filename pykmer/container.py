@@ -34,7 +34,7 @@ class FileBytes:
 
 def getBytes(n, itr):
     xs = []
-    for i in range(n):
+    for i in xrange(n):
         xs.append(itr.next())
     return xs
 
@@ -80,13 +80,13 @@ def getMeta(itr):
     if t == 'T':
         n = decode(itr)
         xs = []
-        for i in range(n):
+        for i in xrange(n):
             xs.append(getMeta(itr))
         return tuple(xs)
     if t == 'D':
         n = decode(itr)
         d = {}
-        for i in range(n):
+        for i in xrange(n):
             k = getMeta(itr)
             v = getMeta(itr)
             d[k] = v
@@ -144,7 +144,7 @@ def putMeta(f, itm):
         f.write('T')
         bs = bytearray(encode(len(itm)))
         f.write(bs)
-        for i in range(len(itm)):
+        for i in xrange(len(itm)):
             putMeta(f, itm[i])
     elif type(itm) == type({}):
         f.write('D')
