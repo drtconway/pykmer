@@ -6,6 +6,28 @@ with the pypy JIT compiling implementation (http:://pypy.org/).  The pypy
 implementation deals well with the blocks of bit-fiddling code which
 tend to be in the inner loops, whereas the standard Python is pretty slow.
 
+Installing pykmer
+-----------------
+
+Installing under the standard Python environment should be easy:
+
+    $ sudo pip install setuptools
+    $ sudo pip install docopt
+    $ python setup.py build
+    $ python setup.py test
+    $ sudo python setup.py install
+
+It's a bit trickier under the Pypy environment because you might
+need to install pip under pypy:
+
+    $ wget https://bootstrap.pypa.io/get-pip.py
+    $ sudo pypy get-pip.py
+    $ sudo pypy -m pip install setuptools
+    $ sudo pypy -m pip install docopt
+    $ pypy setup.py build
+    $ pypy setup.py test
+    $ sudo pypy setup.py install
+
 What is pykmer?
 ---------------
 
