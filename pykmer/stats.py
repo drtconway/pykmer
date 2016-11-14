@@ -1,7 +1,15 @@
 import math
 import sys
 
+def log1mexp(a):
+    """return log(1 - exp(a))"""
+    if a < 0.6931472:
+        return math.log(-math.expm1(a))
+    else:
+        return math.log1p(-math.exp(a))
+
 def factorial(n):
+    """return n!"""
     r = 1
     for i in xrange(2, n+1):
         r *= i
@@ -23,6 +31,7 @@ B2k = {0:   1.0,
        20:  -174611.0/330.0}
 
 def logGamma(x):
+    """return log(Γ(x))"""
     if x < 0:
         return math.log(math.pi) + logGamma(1 - x) - math.log(math.sin(math.pi*x))
     if x < 7:
@@ -37,11 +46,13 @@ def logGamma(x):
     return (x - 0.5)*math.log(x) - x + 0.5*math.log(2*math.pi) + x*s
 
 def logFac(n):
+    """return log(n!)"""
     if n < len(small):
         return small[n]
     return n * math.log(n) - n + math.log(n*(1+4*n*(1+2*n)))/6.0 + math.log(math.pi)/2.0
 
 def logAdd(a, b):
+    """return log(exp(a) + exp(b))"""
     x = max(a, b)
     y = min(a, b)
     w = y - x
