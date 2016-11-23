@@ -31,7 +31,7 @@ B2k = {0:   1.0,
        20:  -174611.0/330.0}
 
 def logGamma(x):
-    """return log(Γ(x))"""
+    """return log(Gamma(x))"""
     if x < 0:
         return math.log(math.pi) + logGamma(1 - x) - math.log(math.sin(math.pi*x))
     if x < 7:
