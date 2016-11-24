@@ -72,6 +72,16 @@ def fnv(x, s):
         x >>= 8
     return h & 0x1FFFFFFFFFFFFFFF
 
+def can(k, x):
+    "Return the canonical form of x"
+    xh = fnv(x, 17)
+    xb = rc(k, x)
+    xbh = fnv(xb, 17)
+    if xh <= xbh:
+        return x
+    else:
+        return xb
+
 def kmers(k, seq, bothStrands=False):
     "Extract k-mers from a string sequence"
     z = len(seq)
