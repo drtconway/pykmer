@@ -119,6 +119,15 @@ def counts2pdf(xs):
 def counts2cdf(xs):
     return pdf2cdf(counts2pdf(xs))
 
+def klDivergence(e, d):
+    "return the Kullback-Leibler divergence between the two PDFs."
+    v = 0
+    for (x, y) in zip(e, d):
+        if y == 0:
+            continue
+        v += y * math.log(y/x)
+    return v
+
 def ksDistance(l, r):
     "return the Kolmogorov-Smirnov distance between to CDFs"
     assert len(l) == len(r)
