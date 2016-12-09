@@ -1,18 +1,29 @@
+import array
 
 class sparse:
-    def __init__(self, z, xs):
-        self.z = z
+    def __init__(self, B, xs):
+        self.B = B
+        self.S = B - 10
         self.xs = xs
+        self.toc = array.array('I', [0 for i in xrange(1024+1)])
+        for x in xs:
+            v = x >> self.S
+            self.toc[v+1] += 1
+        t = 0
+        for i in xrange(1024+1):
+            t += self.toc[i]
+            self.toc[i] = t
 
     def size(self):
-        return self.z
+        return 1 << self.B
 
     def count(self):
         return len(self.xs)
 
     def rank(self, x):
-        l = 0
-        h = len(self.xs) - 1
+        v = x >> self.S
+        l = self.toc[v]
+        h = self.toc[v+1] - 1
         while h >= l:
             m = (h + l) // 2
             y = self.xs[m]
@@ -23,6 +34,12 @@ class sparse:
             else:
                 h = m - 1
         return l
+
+    def rank2(self, x0, x1):
+        r0 = self.rank(x0)
+        for r1 in xrange(r0, len(self.xs)):
+            if self.xs[r1] >= x1:
+                return (r0, r1)
 
     def select(self, i):
         assert 0 <= i
