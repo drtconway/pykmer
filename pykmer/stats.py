@@ -95,6 +95,30 @@ def logGammaQ(a, x):
 def gammaQ(a, x):
     return 1 - gammaP(a, x)
 
+def logBinEq(p, n, k):
+    lp = math.log(p)
+    l1mp = math.log1p(-p)
+    return logChoose(n, k) + lp*k + l1mp*(n - k)
+
+def logBinLe(p, n, k):
+    lp = math.log(p)
+    l1mp = math.log1p(-p)
+    v = logChoose(n, k) + lp*k + l1mp*(n - k)
+    for j in xrange(1, k+1):
+        i = k - j
+        w = logChoose(n, i) + lp*i + l1mp*(n - i)
+        v = logAdd(v, w)
+    return v
+
+def logBinGe(p, n, k):
+    lp = math.log(p)
+    l1mp = math.log1p(-p)
+    v = logChoose(n, k) + lp*k + l1mp*(n - k)
+    for j in xrange(k+1, n+1):
+        w = logChoose(n, j) + lp*j + l1mp*(n - j)
+        v = logAdd(v, w)
+    return v
+
 def normalCDF(x):
     if x == 0:
         return 0.5
