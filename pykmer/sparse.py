@@ -37,9 +37,12 @@ class sparse:
 
     def rank2(self, x0, x1):
         r0 = self.rank(x0)
+        r1 = len(self.xs)
         for r1 in xrange(r0, len(self.xs)):
             if self.xs[r1] >= x1:
-                return (r0, r1)
+                break
+        return (r0, r1)
+
 
     def select(self, i):
         assert 0 <= i
