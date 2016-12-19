@@ -15,7 +15,7 @@ Installing under the standard Python environment should be easy:
     $ sudo pip install docopt
     $ python setup.py build
     $ python setup.py test
-    $ sudo python setup.py install
+    $ sudo python setup.py install_lib
 
 It's a bit trickier under the Pypy environment because you might
 need to install pip under pypy:
@@ -26,7 +26,7 @@ need to install pip under pypy:
     $ sudo pypy -m pip install docopt
     $ pypy setup.py build
     $ pypy setup.py test
-    $ sudo pypy setup.py install
+    $ sudo pypy setup.py install_lib
 
 What is pykmer?
 ---------------
