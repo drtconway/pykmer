@@ -1,5 +1,9 @@
 def uniq(xs):
-    """Remove duplicates from a sorted list in place."""
+    """
+    Remove duplicates from the sorted list `xs`, in place.
+
+    If `xs` is not sorted, this has undefined behaviour.
+    """
     if len(xs) < 2:
         return
     i = 1
