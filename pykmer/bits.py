@@ -8,6 +8,7 @@ tuned somewhat and with pypy run pretty fast.
 Most of the functions are adaptions of those at
 https://graphics.stanford.edu/~seander/bithacks.html
 """
+
 __docformat__ = 'restructuredtext'
 
 # Some useful constants
