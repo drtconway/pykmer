@@ -7,6 +7,7 @@ import sys
 
 if len(sys.argv) < 4:
     print >> sys.stderr, "usage: make-kset.py <K> <output-filename> <input-FASTA>...."
+    sys.exit(1)
 
 K = int(sys.argv[1])
 
