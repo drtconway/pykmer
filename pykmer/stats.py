@@ -95,6 +95,9 @@ def logGammaQ(a, x):
 def gammaQ(a, x):
     return 1 - gammaP(a, x)
 
+def logBeta(a, b):
+    return logGamma(a) + logGamma(b) - logGamma(a + b)
+
 def logBinEq(p, n, k):
     lp = math.log(p)
     l1mp = math.log1p(-p)
