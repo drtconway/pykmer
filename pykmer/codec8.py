@@ -1,6 +1,20 @@
+"""
+This module provides a sequential access variable byte coding scheme.
+
+The basic method is to produce 1 or more 8-bit code words comprised of
+7 data bits and a *continuation* bit. An encoded integer is composed of
+zero or more code words with the continuation bit set, followed by exactly
+one code word with an unset (0) continuation bit. The integer is composed
+from the sequence of groups of 7 data bits, most significant "byte" first.
+"""
+
+__docformat__ = 'restructuredtext'
 
 def encode(x):
-    "encode an integer using a 7-bit+continuation-bit encodeing"
+    """
+    Encode the integer `x` using a 7-bit+continuation-bit encoding,
+    and return the list of 8-bit code words.
+    """
     r = []
     while True:
         r.append(x & 127)
@@ -16,7 +30,10 @@ def encode(x):
     return r
 
 def encodeInto(x, r):
-    "encode an integer using a 7-bit+continuation-bit encodeing into an existing list"
+    """
+    Encode the integer `x` using a 7-bit+continuation-bit encoding,
+    appending the 8-bit code words to an existing list/array.
+    """
     n = 0
     y = x
     while True:
@@ -36,7 +53,10 @@ def encodeInto(x, r):
         n -= 1
 
 def decode(itr):
-    "dencode an integer from a 7-bit+continuation-bit encodeing"
+    """
+    Dencode an integer from a 7-bit+continuation-bit encoding, reading
+    8-bit code words from the iterator `itr`.
+    """
     r = 0
     x = itr.next()
     r = (x & 127)

@@ -1,6 +1,18 @@
+"""
+This module provides simple parsers for the FASTA and FASTQ sequence
+data formats.
+
+The FASTQ parser is not strictly conformant since it assumes the input
+to be in a line oriented form (which is usually true).
+"""
+
+__docformat__ = 'restructuredtext'
 
 def readFasta(file):
-    "Read a FASTA file, and generate (name, sequence) tuples"
+    """
+    Read textual input from the file object `file`, which is assumed to
+    be in FASTA format.  Yields the sequence of (name, sequence) tuples.
+    """
     nm = None
     seq = []
     for l in file:
@@ -16,7 +28,11 @@ def readFasta(file):
         yield (nm, ''.join(seq))
 
 def readFastq(file):
-    "Read a FASTQ file, and generate (id, sequence, id2, quality) tuples"
+    """
+    Read textual input from the file object `file`, which is assumed
+    to be in line-oriented FASTQ format (not full multi-line FASTQ).
+    Yields the sequence of (name, sequence, label, quality) tuples.
+    """
     grp = []
     for l in file:
         l = l.strip()
