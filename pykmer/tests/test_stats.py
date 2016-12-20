@@ -93,24 +93,3 @@ def test_logLowerGamma_a():
         v = ps.logLowerGamma(a, x)
         assert about_equal(v, r, 24)
 
-def test_normalCDF():
-    assert about_equal(ps.normalCDF(0), 0.5, 24)
-    assert about_equal(ps.normalCDF(0.5), 0.6914624612740130071841804, 24)
-    assert about_equal(ps.normalCDF(1.0), 0.8413447460685429257765122, 24)
-    assert about_equal(ps.normalCDF(-0.5), 0.3085375387259869373046683, 24)
-    assert about_equal(ps.normalCDF(-1.0), 0.1586552539314570464679122, 24)
-
-def test_chi2CDF():
-    assert about_equal(ps.chi2CDF(10, 25), 0.0053455054871340661193369, 5)
-    assert about_equal(ps.chi2CDF(11, 25), 0.0091166811255269913222277, 5)
-    assert about_equal(ps.chi2CDF(12, 25), 0.0148228745974415473951602, 5)
-
-def test_logChi2CDF():
-    assert about_equal(ps.logChi2CDF(10, 25), -5.2314991670153032643497681, 5)
-    assert about_equal(ps.logChi2CDF(11, 25), -4.6976494528024916874642258, 5)
-    assert about_equal(ps.logChi2CDF(12, 25), -4.2115837104847466676460499, 5)
-
-def test_logChi2Crit():
-    assert about_equal(ps.logChi2Crit(10, math.log(0.01)), 23.5, 3)
-    assert about_equal(ps.logChi2Crit(10, math.log(0.001)), 29.6, 3)
-    assert about_equal(ps.logChi2Crit(10, math.log(0.0001)), 35.6, 3)
