@@ -55,6 +55,14 @@ def test_ham():
     j = basics.ham(x, y)
     assert h == j
 
+def test_lev():
+    s0 = "CAAAAAAAAAAAAAAAATTTTTTTT"
+    s1 = "CAAAAAAAAAAAAATTTTTTTTCGG"
+    k = len(s0)
+    x0 = basics.kmer(s0)
+    x1 = basics.kmer(s1)
+    assert basics.lev(k, x0, x1) == 3
+
 def test_lcp():
     random.seed(17)
     k = 25

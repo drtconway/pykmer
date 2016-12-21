@@ -113,6 +113,30 @@ def ham(x, y):
     v = (z | (z >> 1)) & m1
     return popcnt(v)
 
+def lev(k, x, y):
+    """
+    Compute the minimal edit distance (Levenshtein distance)
+    between the two *k*-mers `x` and `y`.
+    """
+    t0 = [0 for i in xrange(k + 1)]
+    t1 = [0 for i in xrange(k + 1)]
+
+    y0 = y
+    for i in xrange(k):
+        t1[0] = i + 1
+        y = y0
+        for j in xrange(k):
+            c = (0 if (x&3) == (y&3) else 1)
+            a1 = t0[j] + c
+            a2 = t1[j] + 1
+            a3 = t0[j+1] + 1
+            t1[j+1] = min(a1, a2, a3)
+            y >>= 2
+        x >>= 2
+        t2 = t1
+        t1 = t0
+        t0 = t2
+    return t0[k]
 
 def lcp(k, x, y):
     """
