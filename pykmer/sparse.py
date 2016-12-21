@@ -90,6 +90,12 @@ class sparse:
                 break
         return (r0, r1)
 
+    def access(self, x):
+        """
+        Return True if `x` is in the set.
+        """
+        (r0, r1) = self.rank2(x, x+1)
+        return r1 != r0
 
     def select(self, i):
         """
