@@ -320,3 +320,45 @@ class suffa:
         else:
             return (r1, self.suffs[l])
 
+class deque:
+    """
+    This class implements a simple double ended queue supporting
+    the following methods:
+
+    - len()
+    - push_front()
+    - push_back()
+    - pop_front()
+    - pop_back()
+    """
+
+    def __init__(self):
+        """
+        Construct an empty deque.
+        """
+        self.lhs = []
+        self.rhs = []
+
+    def __len__(self):
+        return len(self.lhs) + len(self.rhs)
+
+    def push_front(self, x):
+        self.lhs.append(x)
+
+    def push_back(self, x):
+        self.rhs.append(x)
+
+    def pop_front(self):
+        assert len(self) > 0
+        if len(self.lhs) == 0:
+            self.lhs = self.rhs[::-1]
+            self.rhs = []
+        return self.lhs.pop()
+
+    def pop_back(self):
+        assert len(self) > 0
+        if len(self.rhs) == 0:
+            self.rhs = self.lhs[::-1]
+            self.lhs = []
+        return self.rhs.pop()
+
