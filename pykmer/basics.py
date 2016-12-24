@@ -164,10 +164,30 @@ def fnv(x, s):
     guaranteed to produce correct results.
     """
     h = s + 0xcbf29ce484222325
-    for i in xrange(8):
-        h ^= (x & 0xff)
-        h *= 0x100000001b3
-        x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
+    h ^= (x & 0xff)
+    h *= 0x100000001b3
+    x >>= 8
     return h & 0x1FFFFFFFFFFFFFFF
 
 def can(k, x):
