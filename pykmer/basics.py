@@ -191,6 +191,15 @@ def can(k, x):
     else:
         return xb
 
+def sub(s, p, x):
+    """
+    Return true iff `x` is in the deterministically defined subspace
+    of *k*-mers defined by determining those who's normalized hash
+    value (with seed `s`) is less than `p`.
+    """
+    u = float(fnv(x, s)) / float(0x1FFFFFFFFFFFFFFF)
+    return u < p
+
 def kmers(k, seq, bothStrands=False):
     """
     Extract *k*-mers from a string nucleotide sequence `seq`.
