@@ -237,9 +237,11 @@ def kmers(k, seq, bothStrands=False):
     """
     z = len(seq)
     msk = (1 << (2*k)) - 1
+    s = 2*(k-1)
     i = 0
     j = 0
     x = 0
+    xb = 0
     while i + k <= z:
         while i + j < z and j < k:
             b = nuc.get(seq[i+j], 4)
@@ -247,14 +249,16 @@ def kmers(k, seq, bothStrands=False):
                 i += j + 1
                 j = 0
                 x = 0
+                xb = 0
             else:
                 x = (x << 2) | b
+                xb = (xb >> 2) | ((3 - b) << s)
                 j += 1
         if j == k:
             x &= msk
             yield x
             if bothStrands:
-                yield rc(k, x)
+                yield xb
             j -= 1
         i += 1
 

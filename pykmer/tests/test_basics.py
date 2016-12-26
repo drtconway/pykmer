@@ -88,3 +88,15 @@ def test_kmers():
         if y is not None:
             ys.append(y)
     assert xs == ys
+
+def test_kmers_both():
+    s = "CCTCGTACGCCATATTTTCGCATTTCACGTACGTATTGTTTTTGCAACATAATTACCTATTCTCTTTTGGGGGGGGTTTTAGGCATTCCATTTAATNGCTTTTCTTTTAATGCATGGAGTTTTTCCCATTCATCCTTTGATATATTATCTTTACTTGCTTCGAAGTCTNTTGCTGTGAGATGTATATCTTCTGGATGGATTTGTTTACGTTCTTTTGTTACTGGATCTATAGTAAATGGAATCATTTCCTT"
+    k = 25
+    xs = list(basics.kmers(k, s, True))
+    ys = []
+    for i in range(len(s) - k + 1):
+        y = basics.kmer(s[i:i+k])
+        if y is not None:
+            ys.append(y)
+            ys.append(basics.rc(k, y))
+    assert xs == ys
