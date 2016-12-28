@@ -163,32 +163,48 @@ def fnv(x, s):
     Although *k* is not a parameter, *k*-mers longer than 30bp are not
     guaranteed to produce correct results.
     """
-    h = s + 0xcbf29ce484222325
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
-    h ^= (x & 0xff)
-    h *= 0x100000001b3
-    x >>= 8
+    h = 0xcbf29ce484222325
+    for i in xrange(8):
+        h ^= (s & 0xff)
+        h = (h * 0x100000001b3) & 0x1FFFFFFFFFFFFFFF
+        s >>= 8
+    for i in xrange(8):
+        h ^= (x & 0xff)
+        h = (h * 0x100000001b3) & 0x1FFFFFFFFFFFFFFF
+        x >>= 8
     return h & 0x1FFFFFFFFFFFFFFF
+
+def murmer(x, s):
+    def rot64(a, b):
+        return (a << b) | (a >> (64 - b))
+
+    def fmix64(k):
+        k ^= k >> 33
+        k = (k * 0xff51afd7ed558ccd) & 0xFFFFFFFFFFFFFFFF
+        k ^= k >> 33
+        k = (k * 0xc4ceb9fe1a85ec53) & 0xFFFFFFFFFFFFFFFF
+        k ^= k >> 33
+        return k
+
+    c1 = 0x87c37b91114253d5
+    c2 = 0x4cf5ad432745937f
+    h = s
+    k = x
+    k = (k * c1) & 0xFFFFFFFFFFFFFFFF
+    #k = rot64(k,31) & 0xFFFFFFFFFFFFFFFF
+    k = ((k << 31) | (k >> 33)) & 0xFFFFFFFFFFFFFFFF
+    k = (k * c2) & 0xFFFFFFFFFFFFFFFF
+    h ^= k
+    #h = rot64(h,27) & 0xFFFFFFFFFFFFFFFF
+    h = ((h << 27) | (h >> 37)) & 0xFFFFFFFFFFFFFFFF
+    h = (h*5+0x52dce729) & 0xFFFFFFFFFFFFFFFF
+    # fmix64
+    h ^= h >> 33
+    h = (h * 0xff51afd7ed558ccd) & 0xFFFFFFFFFFFFFFFF
+    h ^= h >> 33
+    h = (h * 0xc4ceb9fe1a85ec53) & 0xFFFFFFFFFFFFFFFF
+    h ^= h >> 33
+    return h
 
 def can(k, x):
     """
@@ -217,7 +233,7 @@ def sub(s, p, x):
     of *k*-mers defined by determining those who's normalized hash
     value (with seed `s`) is less than `p`.
     """
-    u = float(fnv(x, s)) / float(0x1FFFFFFFFFFFFFFF)
+    u = float(murmer(x, s)) / float(0x1FFFFFFFFFFFFFFF)
     return u < p
 
 def kmers(k, seq, bothStrands=False):
