@@ -92,10 +92,14 @@ class sparse:
 
     def access(self, x):
         """
-        Return True if `x` is in the set.
+        Return the rank of `x` if it is in the set, and None
+        otherwise.
         """
         (r0, r1) = self.rank2(x, x+1)
-        return r1 != r0
+        if r1 == r0:
+            return None
+        else:
+            return r0
 
     def select(self, i):
         """
