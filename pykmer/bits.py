@@ -85,9 +85,9 @@ def ffs(x):
     else:
         x16 = x >> 16
         if x16 > 0:
-            x20 = x >> 20
-            if x20 > 0:
-                return ffsBits[x20] + 20
+            x24 = x >> 24
+            if x24 > 0:
+                return ffsBits[x24] + 24
             else:
                 return ffsBits[x16] + 16
         else:
