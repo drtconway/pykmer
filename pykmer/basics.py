@@ -91,7 +91,7 @@ def fasta(x):
      G      4
      T/U    8
      """
-    return fas[ind]
+    return fas[x]
 
 def rc(k, x):
     """
