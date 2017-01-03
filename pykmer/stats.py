@@ -89,6 +89,23 @@ def logSum(xs):
         y = logAdd(y, x)
     return y
 
+def kahanSum(xs):
+    """
+    Use the Kahan sum algorithm to compute the sum of the numbers
+    in `xs`. This algorithm mitigates the problems associated with
+    limited mantissa bits in floating point numbers.
+
+    See: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+    """
+    s = 0.0
+    c = 0.0
+    for x in xs:
+        y = x - c
+        t = s + y
+        c = (t - s) - y
+        s = t
+    return s
+
 def logChoose(n, k):
     """
     Combinatoric choice.
