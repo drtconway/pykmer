@@ -1,172 +1,94 @@
-from pykmer.codec8 import encode, decode
-from pykmer.exceptions import BadCookie, BadMetaData, MetaDataIncompatible, MetaDataMissing
+import cPickle
+import os
+import types
+import zipfile
 
-import array
-import math
-import sys
+class SelfZippingFile:
+    def __init__(self, z, zfn, comp):
+        self.z = z
+        self.zfn = zfn
+        self.comp = comp
+        self.tfn = None
+        self.tf = None
 
-cookie = "TCF"
+    def __enter__(self):
+        self.tfn = os.tmpnam()
+        self.tf = open(self.tfn, 'w')
+        return self.tf
 
-class FileBytes:
-    def __init__(self, f):
-        self.f = f
-        self.eof = False
-        self.buf = array.array('B')
-        self.z = len(self.buf)
-        self.itr = 0
+    def __exit__(self, t, v, tb):
+        if t is not None:
+            return False
 
-    def next(self):
-        while self.itr == self.z:
-            if self.eof:
-                raise StopIteration
-            s = self.f.read(4096)
-            if len(s) < 4096:
-                self.eof = True
-            self.itr = 0
-            self.buf = array.array('B')
-            self.buf.fromstring(s)
-            self.z = len(self.buf)
+        self.tf.close()
+        comp = zipfile.ZIP_STORED
+        if self.comp:
+            comp = zipfile.ZIP_DEFLATED
+        self.z.write(self.tfn, self.zfn, comp)
 
-        if self.itr < self.z:
-            x = self.buf[self.itr]
-            self.itr += 1
-            return x
+        return True
 
-def getBytes(n, itr):
-    xs = []
-    for i in xrange(n):
-        xs.append(itr.next())
-    return xs
+class container:
+    def __init__(self, nm, mode):
+        self.nm = nm
+        self.mode = mode
+        self.z = None
+        self.meta = None
 
-def check_cookie(itr):
-    c = getBytes(len(cookie), itr)
-    c = ''.join(map(chr, c))
-    if c != cookie:
-        raise BadCookie()
-
-def check_meta(t, m):
-    for (k,v) in t.items():
-        if k not in m:
-            raise MetaDataMissing(k)
-        if v is not None and m[k] != v:
-            raise MetaDataIncompatible(k, v, m[k])
-
-def getMeta(itr):
-    t = chr(itr.next())
-    if t == 'Z':
-        return decode(itr)
-    if t == 'z':
-        return -decode(itr)
-    if t == 'F':
-        m = decode(itr)
-        e = decode(itr)
-        return float(m) * 2**e
-    if t == 'G':
-        m = decode(itr)
-        e = -decode(itr)
-        return float(m) * 2**e
-    if t == 'f':
-        m = -decode(itr)
-        e = decode(itr)
-        return float(m) * 2**e
-    if t == 'g':
-        m = -decode(itr)
-        e = -decode(itr)
-        return float(m) * 2**e
-    if t == 'S':
-        l = decode(itr)
-        xs = getBytes(l, itr)
-        return ''.join(map(chr, xs))
-    if t == 'T':
-        n = decode(itr)
-        xs = []
-        for i in xrange(n):
-            xs.append(getMeta(itr))
-        return tuple(xs)
-    if t == 'D':
-        n = decode(itr)
-        d = {}
-        for i in xrange(n):
-            k = getMeta(itr)
-            v = getMeta(itr)
-            d[k] = v
-        return d
-
-def putMeta(f, itm):
-    if type(itm) == type(int(1)) or type(itm) == type(long(1)):
-        if itm >= 0:
-            f.write('Z')
-            bs = bytearray(encode(itm))
-            f.write(bs)
+    def __enter__(self):
+        self.z = zipfile.ZipFile(self.nm, self.mode)
+        if self.mode == 'r':
+            self.meta = cPickle.load(self.z.open('__meta__'))
         else:
-            f.write('z')
-            bs = bytearray(encode(-itm))
-            f.write(bs)
-    elif type(itm) == type(float(0)):
-        if itm >= 0.0:
-            (m, e) = math.frexp(itm)
-            m = long(m * 2**40)
-            e -= 40
-            if e >= 0:
-                f.write('F')
-                bs = bytearray(encode(m))
-                f.write(bs)
-                bs = bytearray(encode(e))
-                f.write(bs)
-            else:
-                f.write('G')
-                bs = bytearray(encode(m))
-                f.write(bs)
-                bs = bytearray(encode(-e))
-                f.write(bs)
-        else:
-            (m, e) = math.frexp(-itm)
-            m = long(m * 2**40)
-            e -= 40
-            if e >= 0:
-                f.write('f')
-                bs = bytearray(encode(m))
-                f.write(bs)
-                bs = bytearray(encode(e))
-                f.write(bs)
-            else:
-                f.write('g')
-                bs = bytearray(encode(m))
-                f.write(bs)
-                bs = bytearray(encode(-e))
-                f.write(bs)
-    elif type(itm) == type(''):
-        f.write('S')
-        bs = bytearray(encode(len(itm)))
-        f.write(bs)
-        f.write(itm)
-    elif type(itm) == type(tuple([])):
-        f.write('T')
-        bs = bytearray(encode(len(itm)))
-        f.write(bs)
-        for i in xrange(len(itm)):
-            putMeta(f, itm[i])
-    elif type(itm) == type({}):
-        f.write('D')
-        bs = bytearray(encode(len(itm)))
-        f.write(bs)
-        for (k,v) in itm.items():
-            putMeta(f, k)
-            putMeta(f, v)
-    else:
-        raise BadMetaData(itm)
+            self.meta = {}
+            self.meta['version'] = '20170109a'
+            self.manifest = {}
+        return self
 
-def probe(fn, t = None):
-    f = open(fn, 'rb')
-    itr = FileBytes(f)
-    check_cookie(itr)
-    m = getMeta(itr)
-    if t is not None:
-        check_meta(t, m)
-    return (m, itr)
+    def __exit__(self, t, v, tb):
+        if t is not None:
+            return False
+        if self.z is not None:
+            if self.mode == 'w' and t is None:
+                self.z.writestr('__meta__', cPickle.dumps(self.meta))
+                self.z.writestr('__manifest__', cPickle.dumps(self.manifest))
+            self.z.close()
+        return t is not None
 
-def make(fn, meta):
-    f = open(fn, 'wb')
-    f.write(cookie)
-    putMeta(f, meta)
-    return f
+    def creat(self, fn, comp = False):
+        assert self.z is not None
+        assert fn not in self.manifest
+        self.manifest[fn] = {}
+        return SelfZippingFile(self.z, fn, comp)
+
+    def add(self, fn, bytes):
+        assert self.z is not None
+        assert fn not in self.manifest
+        self.manifest[fn] = {}
+        self.z.writestr(fn, bytes)
+
+    def open(self, fn):
+        return self.z.open(fn)
+
+    def find(self,  **qry):
+        cand = self.manifest.keys()
+        for (var, val) in qry.iteritems():
+            next = []
+            for c in cand:
+                if var not in self.manifest[c]:
+                    continue
+                if type(val) is list or type(val) is tuple:
+                    found = False
+                    for v in val:
+                        if self.manifest[c][var] == v:
+                            found = True
+                            break
+                    if not found:
+                        continue
+                else:
+                    if self.manifest[c][var] != val:
+                        continue
+                next.append(c)
+            cand = next
+        return cand
+
