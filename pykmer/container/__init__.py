@@ -64,14 +64,14 @@ class container:
         self.meta = None
 
         if self.mode == 'r':
-            self.z = zipfile.ZipFile(self.nm, self.mode)
+            self.z = zipfile.ZipFile(self.nm, self.mode, allowZip64=True)
             self.meta = cPickle.load(self.z.open('__meta__'))
         elif self.mode == 'a':
             with zipfile.ZipFile(self.nm, 'r') as z:
                 self.meta = cPickle.load(z.open('__meta__'))
-            self.z = zipfile.ZipFile(self.nm, self.mode)
+            self.z = zipfile.ZipFile(self.nm, self.mode, allowZip64=True)
         else:
-            self.z = zipfile.ZipFile(self.nm, self.mode)
+            self.z = zipfile.ZipFile(self.nm, self.mode, allowZip64=True)
             self.meta = {}
 
     def __enter__(self):
