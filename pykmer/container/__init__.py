@@ -1,6 +1,32 @@
+"""
+A container format for storing k-mers, counts and associated information.
+
+The container format of the container is a ZIP file. A container always
+containts at least the two following files:
+`__meta__`
+    which is a pickle format dictionary of meta-data. The user level
+    container object represents this at runtime as the member
+    variable `meta`.
+
+The container may also contain additional files corresponding to
+data objects that belong together. In practice this typically means
+files containing k-mers, counts, and other related items.
+
+The principle functionality offered by the container class over a
+straight ZIP file or tar file is the ability to transparently stream
+data in to the container. This is done with an additional object
+which creates a temporary file, and on closing moves it in to the
+container.
+
+"""
+
+__docformat__ = 'restructuredtext'
+
 import cPickle
 import os
 import types
+import uuid
+import warnings
 import zipfile
 
 class SelfZippingFile:
@@ -8,25 +34,27 @@ class SelfZippingFile:
         self.z = z
         self.zfn = zfn
         self.comp = comp
-        self.tfn = None
-        self.tf = None
+        self.tfn = os.getenv('TMPDIR', '/tmp') + '/' + str(uuid.uuid4())
+        self.tf = open(self.tfn, 'w')
 
     def __enter__(self):
-        self.tfn = os.tmpnam()
-        self.tf = open(self.tfn, 'w')
         return self.tf
 
     def __exit__(self, t, v, tb):
         if t is not None:
             return False
+        self.close()
+        return True
 
+    def close(self):
         self.tf.close()
         comp = zipfile.ZIP_STORED
         if self.comp:
             comp = zipfile.ZIP_DEFLATED
         self.z.write(self.tfn, self.zfn, comp)
 
-        return True
+    def write(self, x):
+        self.tf.write(x)
 
 class container:
     def __init__(self, nm, mode):
@@ -35,67 +63,42 @@ class container:
         self.z = None
         self.meta = None
 
-    def __enter__(self):
         if self.mode == 'r':
             self.z = zipfile.ZipFile(self.nm, self.mode)
             self.meta = cPickle.load(self.z.open('__meta__'))
-            self.manifest = cPickle.load(self.z.open('__manifest__'))
         elif self.mode == 'a':
             with zipfile.ZipFile(self.nm, 'r') as z:
                 self.meta = cPickle.load(z.open('__meta__'))
-                self.manifest = cPickle.load(z.open('__manifest__'))
             self.z = zipfile.ZipFile(self.nm, self.mode)
         else:
             self.z = zipfile.ZipFile(self.nm, self.mode)
             self.meta = {}
-            self.meta['version'] = '20170109a'
-            self.manifest = {}
+
+    def __enter__(self):
         return self
 
     def __exit__(self, t, v, tb):
         if t is not None:
             return False
         if self.z is not None:
-            if self.mode == 'w' and t is None:
-                self.z.writestr('__meta__', cPickle.dumps(self.meta))
-                self.z.writestr('__manifest__', cPickle.dumps(self.manifest))
-            self.z.close()
+            self.close()
         return t is not None
 
     def creat(self, fn, comp = False):
         assert self.z is not None
-        assert fn not in self.manifest
-        self.manifest[fn] = {}
         return SelfZippingFile(self.z, fn, comp)
 
     def add(self, fn, bytes):
         assert self.z is not None
-        assert fn not in self.manifest
-        self.manifest[fn] = {}
         self.z.writestr(fn, bytes)
 
     def open(self, fn):
         return self.z.open(fn)
 
-    def find(self,  **qry):
-        cand = self.manifest.keys()
-        for (var, val) in qry.iteritems():
-            next = []
-            for c in cand:
-                if var not in self.manifest[c]:
-                    continue
-                if type(val) is list or type(val) is tuple:
-                    found = False
-                    for v in val:
-                        if self.manifest[c][var] == v:
-                            found = True
-                            break
-                    if not found:
-                        continue
-                else:
-                    if self.manifest[c][var] != val:
-                        continue
-                next.append(c)
-            cand = next
-        return cand
-
+    def close(self):
+        assert self.z is not None
+        if (self.mode == 'w' or self.mode == 'a'):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.z.writestr('__meta__', cPickle.dumps(self.meta))
+        self.z.close()
