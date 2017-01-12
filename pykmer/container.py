@@ -36,10 +36,17 @@ class container:
         self.meta = None
 
     def __enter__(self):
-        self.z = zipfile.ZipFile(self.nm, self.mode)
         if self.mode == 'r':
+            self.z = zipfile.ZipFile(self.nm, self.mode)
             self.meta = cPickle.load(self.z.open('__meta__'))
+            self.manifest = cPickle.load(self.z.open('__manifest__'))
+        elif self.mode == 'a':
+            with zipfile.ZipFile(self.nm, 'r') as z:
+                self.meta = cPickle.load(z.open('__meta__'))
+                self.manifest = cPickle.load(z.open('__manifest__'))
+            self.z = zipfile.ZipFile(self.nm, self.mode)
         else:
+            self.z = zipfile.ZipFile(self.nm, self.mode)
             self.meta = {}
             self.meta['version'] = '20170109a'
             self.manifest = {}
