@@ -238,10 +238,10 @@ def sub(s, p, x):
 
 def kmers(k, seq, bothStrands=False):
     """
-    Extract *k*-mers from a string nucleotide sequence `seq`.
-    The parameter `bothStrands` determines whether the sequence of
-    result *k*-mers should include the reverse complement of each *k*-mer
-    extracted from the string.
+    A generator for extracting *k*-mers from a string nucleotide
+    sequence `seq`.  The parameter `bothStrands` determines whether
+    the sequence of result *k*-mers should include the reverse
+    complement of each *k*-mer extracted from the string.
 
     The *k*-mers are extracted using a *sliding* window, not a *tiling*
     window.  This means that the results include the *k*-mer starting
@@ -280,16 +280,18 @@ def kmers(k, seq, bothStrands=False):
 
 def kmersList(k, seq, bothStrands=False):
     """
-    Extract *k*-mers from a string nucleotide sequence `seq`.
-    The parameter `bothStrands` determines whether the sequence of
-    result *k*-mers should include the reverse complement of each *k*-mer
-    extracted from the string.
+    Extract *k*-mers from a string nucleotide sequence `seq` and
+    return them as a list.  The parameter `bothStrands` determines
+    whether the sequence of result *k*-mers should include the
+    reverse complement of each *k*-mer extracted from the string.
 
-    The *k*-mers are extracted using a *sliding* window, not a *tiling*
-    window.  This means that the results include the *k*-mer starting
-    at each position in the string: 0, 1, 2, ...., len(str) - k + 1.
+    The *k*-mers are extracted using a *sliding* window, not a
+    *tiling* window.  This means that the results include the *k*-mer
+    starting at each position in the string:
+        0, 1, 2, ...., len(str) - k + 1.
 
-    Any *k*-mers overlaying characters *other* than AaCcGgTtUu are skipped.
+    Any *k*-mers overlaying characters *other* than AaCcGgTtUu are
+    skipped.
 
     Values of `k` > 30 are not guaranteed to work.
     """
