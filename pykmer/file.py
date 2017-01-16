@@ -8,6 +8,8 @@ to be in a line oriented form (which is usually true).
 
 __docformat__ = 'restructuredtext'
 
+import subprocess
+
 def readFasta(file):
     """
     Read textual input from the file object `file`, which is assumed to
@@ -42,4 +44,15 @@ def readFastq(file):
             grp = []
     if grp == 4:
         yield tuple(grp)
+
+def openFile(fn):
+    if fn == "-":
+        return sys.stdin
+    if fn.endswith(".gz"):
+        p = subprocess.Popen(['gunzip', '-c', fn], stdout=subprocess.PIPE)
+        return p.stdout
+    if fn.endswith(".bz2"):
+        p = subprocess.Popen(['bunzip2', '-c', fn], stdout=subprocess.PIPE)
+        return p.stdout
+    return open(fn, 'rb')
 
