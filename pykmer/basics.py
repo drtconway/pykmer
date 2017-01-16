@@ -320,6 +320,7 @@ def kmersList(k, seq, bothStrands=False):
                 res.append(xb)
             j -= 1
         i += 1
+    return res
 
 def kmersWithPos(k, seq, bothStrands=False):
     """
