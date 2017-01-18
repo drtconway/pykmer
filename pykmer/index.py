@@ -1,3 +1,14 @@
+"""
+A module for constructing indexes over k-mers.
+
+Indexes are built from 1 or more FASTA files, with each FASTA record
+being a distinct entity. The index maps from k-mer back to the list
+of FASTA records which contain that k-mer. Reverse complements are
+included.
+"""
+
+__docformat__ = 'restructuredtext'
+
 from pykmer.basics import kmers
 from pykmer.misc import uniq
 from pykmer.sparse import sparse
@@ -9,6 +20,20 @@ from pykmer.container.vectors import read32, write32, read16, write16
 import array
 
 class KmerIndex:
+    """
+    The KmerIndex object is loaded from a container, usually
+    indirectly with the `index` function, created with the `buildIndex`
+    function. It has three attributes of interest.
+
+    `KmerIndex.K`
+        is the value of K used for the index.
+    `KmerIndex.names`
+        is a list of the reference sequence names used for mapping
+        the results of lookup back from sequence numbers to names.
+    `KmerIndex[x]`
+        is the lookup method for finding the reference sequence
+        numbers for those sequences containing `x`.
+    """
     def __init__(self, z):
         self.K = z.meta['K']
         S = array.array('L', readKmers(z))
@@ -29,11 +54,23 @@ class KmerIndex:
         return res
 
 def index(fn):
+    """
+    Load a k-mer index into memory and return the resulting KmerIndex
+    object.
+    """
     with container(fn, 'r') as z:
         idx = KmerIndex(z)
     return idx
 
 def buildIndex(K, inputs, output):
+    """
+    Create a new k-mer index. The FASTA files named in the list
+    `inputs` are read in and the `K` length k-mers and their reverse
+    complements are extracted and collated to create an index that
+    maps from k-mer to sequence number (numbering from 0). The
+    `names` member of the KmerIndex object can be used to retrieve
+    the name from the sequence number.
+    """
     seqs = []
     for inp in inputs:
         with openFile(inp) as f:
@@ -44,7 +81,7 @@ def buildIndex(K, inputs, output):
     for i in xrange(len(seqs)):
         (nm, seq) = seqs[i]
         nms.append(nm)
-        xs = list(kmers(K, seq))
+        xs = list(kmers(K, seq, True))
         xs.sort()
         uniq(xs)
         seqs[i] = [nm, xs]
