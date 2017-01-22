@@ -45,6 +45,28 @@ def readFastq(file):
     if grp == 4:
         yield tuple(grp)
 
+def readFastqBlock(file, n=1024):
+    """
+    Read textual input from the file object `file`, which is assumed
+    to be in line-oriented FASTQ format (not full multi-line FASTQ).
+    Yields a block of sequences at a time.
+    """
+    grps = []
+    grp = []
+    for l in file:
+        l = l.strip()
+        grp.append(l)
+        if len(grp) == 4:
+            grps.append(tuple(grp))
+            if len(grps) == n:
+                yield grps
+                grps = []
+            grp = []
+    if grp == 4:
+        yield tuple(grp)
+    if len(grps) > 0:
+        yield grps
+
 def openFile(fn, mode='r'):
     """
     Open a file "cleverly".
