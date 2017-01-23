@@ -16,6 +16,7 @@ class GenericWriter:
         self.f = z.creat(nm, True)
         self.a = array.array(self.w)
         self.n = 0
+        self.closed = False
 
     def __enter__(self):
         return self
@@ -30,6 +31,7 @@ class GenericWriter:
         if len(self.a) > 0:
             self.flush()
         self.f.close()
+        self.closed = True
 
     def append(self, x):
         self.n += 1
@@ -43,6 +45,9 @@ class GenericWriter:
         self.f.write(v)
         self.f.write(s)
         self.a = array.array(self.w, [])
+
+    def __del__(self):
+        assert self.closed == True
 
 def writer64(z, nm):
     return GenericWriter(z, nm, 'L')
