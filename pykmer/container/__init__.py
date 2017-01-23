@@ -53,6 +53,7 @@ class SelfZippingFile:
         if self.comp:
             comp = zipfile.ZIP_DEFLATED
         self.z.write(self.tfn, self.zfn, comp)
+        os.remove(self.tfn)
 
     def write(self, x):
         self.tf.write(x)
