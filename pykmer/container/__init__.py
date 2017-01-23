@@ -22,10 +22,11 @@ container.
 
 __docformat__ = 'restructuredtext'
 
+from pykmer.file import tmpfile
+
 import cPickle
 import os
 import types
-import uuid
 import warnings
 import zipfile
 
@@ -34,7 +35,7 @@ class SelfZippingFile:
         self.z = z
         self.zfn = zfn
         self.comp = comp
-        self.tfn = os.getenv('TMPDIR', '/tmp') + '/' + str(uuid.uuid4())
+        self.tfn = tmpfile('.szf')
         self.tf = open(self.tfn, 'w')
 
     def __enter__(self):

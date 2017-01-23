@@ -8,7 +8,9 @@ to be in a line oriented form (which is usually true).
 
 __docformat__ = 'restructuredtext'
 
+import os
 import subprocess
+import uuid
 
 def readFasta(file):
     """
@@ -52,18 +54,21 @@ def readFastqBlock(file, n=1024):
     Yields a block of sequences at a time.
     """
     grps = []
-    grp = []
+    grp = [None, None, None, None]
+    i = 0
     for l in file:
         l = l.strip()
-        grp.append(l)
-        if len(grp) == 4:
-            grps.append(tuple(grp))
+        grp[i] = l
+        i += 1
+        if i == 4:
+            grps.append(grp)
             if len(grps) == n:
                 yield grps
                 grps = []
-            grp = []
-    if grp == 4:
-        yield tuple(grp)
+            grp = [None, None, None, None]
+            i = 0
+    if i == 4:
+        grps.append(grp)
     if len(grps) > 0:
         yield grps
 
@@ -103,3 +108,5 @@ def openFile(fn, mode='r'):
         return p.stdin
     return open(fn, mode)
 
+def tmpfile(suffix = ''):
+    return os.getenv('TMPDIR', '/tmp') + '/' + str(uuid.uuid4()) + suffix
