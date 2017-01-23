@@ -46,6 +46,9 @@ class KmerWriter:
         self.z.meta['K'] = self.K
         self.z.meta['N'] = self.w.n
 
+def kmerWriter(z, K, nm = None):
+    return KmerWriter(K, z, nm)
+
 def readKmers(z, nm = None):
     assert nm is not None or 'kmers' in z.meta
 
@@ -95,6 +98,9 @@ class CountsWriter:
         self.z.meta['counts'] = self.nm
         self.z.meta['K'] = self.K
         self.z.meta['N'] = self.w.n
+
+def countsWriter(z, K, nm = None):
+    return CountsWriter(K, z, nm)
 
 def readCounts(z, nm = None):
     assert nm is not None or 'counts' in z.meta
