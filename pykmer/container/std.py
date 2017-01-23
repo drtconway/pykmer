@@ -18,7 +18,7 @@ def writeKmers(K, xs, z, nm=None):
     n = vectors.write64(z, xs, nm)
     z.meta['kmers'] = nm
     z.meta['K'] = K
-    z.meta['N'] = n
+    z.meta[nm + '-' + 'N'] = n
 
     return n
 
@@ -44,7 +44,7 @@ class KmerWriter:
         self.w.close()
         self.z.meta['kmers'] = self.nm
         self.z.meta['K'] = self.K
-        self.z.meta['N'] = self.w.n
+        self.z.meta[self.nm + '-' + 'N'] = self.w.n
 
 def kmerWriter(z, K, nm = None):
     return KmerWriter(K, z, nm)
@@ -56,7 +56,7 @@ def readKmers(z, nm = None):
         nm = z.meta['kmers']
 
     K = z.meta['K']
-    N = z.meta['N']
+    N = z.meta[nm + '-' + 'N']
 
     return vectors.read64(z, nm, N)
 
@@ -71,7 +71,7 @@ def writeCounts(K, xs, z, nm=None):
 
     z.meta['counts'] = nm
     z.meta['K'] = K
-    z.meta['N'] = n
+    z.meta[nm + '-' + 'N'] = n
 
     return n
 
@@ -97,7 +97,7 @@ class CountsWriter:
         self.w.close()
         self.z.meta['counts'] = self.nm
         self.z.meta['K'] = self.K
-        self.z.meta['N'] = self.w.n
+        self.z.meta[self.nm + '-' + 'N'] = self.w.n
 
 def countsWriter(z, K, nm = None):
     return CountsWriter(K, z, nm)
@@ -109,7 +109,7 @@ def readCounts(z, nm = None):
         nm = z.meta['counts']
 
     K = z.meta['K']
-    N = z.meta['N']
+    N = z.meta[nm + '-' + 'N']
 
     return vectors.read32(z, nm, N)
 
