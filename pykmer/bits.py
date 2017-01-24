@@ -42,7 +42,7 @@ def popcnt(x):
     x = (x & m6) + ((x >> 32) & m6)
     return x & 0x7F
 
-def ffs0(x):
+def _ffs0(x):
     r = (x > 0xFFFFFFFF) << 5
     x >>= r
     s = (x > 0xFFFF) << 4
@@ -60,7 +60,7 @@ def ffs0(x):
     r |= (x >> 1)
     return r
 
-ffsBits = [ffs0(i) for i in xrange(256)]
+_ffsBits = [_ffs0(i) for i in xrange(256)]
 
 def ffs(x):
     """
@@ -73,26 +73,26 @@ def ffs(x):
         if x48 > 0:
             x56 = x >> 56
             if x56 > 0:
-                return ffsBits[x56] + 56
+                return _ffsBits[x56] + 56
             else:
-                return ffsBits[x48] + 48
+                return _ffsBits[x48] + 48
         else:
             x40 = x >> 40
             if x40 > 0:
-                return ffsBits[x40] + 40
+                return _ffsBits[x40] + 40
             else:
-                return ffsBits[x32] + 32
+                return _ffsBits[x32] + 32
     else:
         x16 = x >> 16
         if x16 > 0:
             x24 = x >> 24
             if x24 > 0:
-                return ffsBits[x24] + 24
+                return _ffsBits[x24] + 24
             else:
-                return ffsBits[x16] + 16
+                return _ffsBits[x16] + 16
         else:
             x8 = x >> 8
             if x8 > 0:
-                return ffsBits[x8] + 8
+                return _ffsBits[x8] + 8
             else:
-                return ffsBits[x]
+                return _ffsBits[x]

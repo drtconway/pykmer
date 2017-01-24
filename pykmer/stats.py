@@ -30,9 +30,9 @@ def factorial(n):
         r *= i
     return r
 
-small = [math.log(factorial(n)) for n in xrange(25)]
+_small = [math.log(factorial(n)) for n in xrange(25)]
 
-B2k = {0:   1.0,
+_B2k = {0:   1.0,
        1:   -0.5,
        2:   1.0/6.0,
        4:   -1.0/30.0,
@@ -59,15 +59,15 @@ def logGamma(x):
         return logGamma(x + n) - math.log(p)
     s = 0
     for k in xrange(1, 11):
-        s += B2k[2*k] / (2*k * (2*k - 1)) * math.pow(x, -2*k)
+        s += _B2k[2*k] / (2*k * (2*k - 1)) * math.pow(x, -2*k)
     return (x - 0.5)*math.log(x) - x + 0.5*math.log(2*math.pi) + x*s
 
 def logFac(n):
     """
     return log(n!)
     """
-    if n < len(small):
-        return small[n]
+    if n < len(_small):
+        return _small[n]
     return n * math.log(n) - n + math.log(n*(1+4*n*(1+2*n)))/6.0 + math.log(math.pi)/2.0
 
 def logAdd(a, b):
@@ -116,6 +116,9 @@ def logChoose(n, k):
     return logFac(n) - (logFac(n - k) + logFac(k))
 
 def logLowerGamma(a, x):
+    """
+    Compute the log of the lower incomplete gamma function.
+    """
     lx = math.log(x)
     ls = None
     for n in xrange(2000):

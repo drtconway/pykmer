@@ -39,15 +39,15 @@ __docformat__ = 'restructuredtext'
 
 from pykmer.bits import ffs, rev, popcnt, m1
 
-nuc = { 'A':0, 'a':0, 'C':1, 'c':1, 'G':2, 'g':2, 'T':3, 't':3, 'U':3, 'u':3 }
+_nuc = { 'A':0, 'a':0, 'C':1, 'c':1, 'G':2, 'g':2, 'T':3, 't':3, 'U':3, 'u':3 }
 
 def kmer(seq):
     "Turn a string `seq` into an integer k-mer"
     r = 0
     for c in seq:
-        if c not in nuc:
+        if c not in _nuc:
             return None
-        r = (r << 2) | nuc[c]
+        r = (r << 2) | _nuc[c]
     return r
 
 def render(k, x):
@@ -58,7 +58,7 @@ def render(k, x):
         x >>= 2
     return ''.join(r[::-1])
 
-fas = [
+_fas = [
     '*', # 0000
     'A', # 0001
     'C', # 0010
@@ -91,7 +91,7 @@ def fasta(x):
      G      4
      T/U    8
      """
-    return fas[x]
+    return _fas[x]
 
 def rc(k, x):
     """
@@ -155,11 +155,6 @@ def fnv(x, s):
     Compute a Fowler-Noll-Vo (FNV) hash of a *k*-mer `x` with the seed
     `s`, returning least significant 61 bits.
 
-    We recommend this for hashing *k*-mers over Python's builtin `hash`
-    function, for most uses. Python's builtin hash function returns the
-    value of the integer as its hash, which for many *k*-mer methods is
-    undesirable.
-
     Although *k* is not a parameter, *k*-mers longer than 30bp are not
     guaranteed to produce correct results.
     """
@@ -175,10 +170,18 @@ def fnv(x, s):
     return h & 0x1FFFFFFFFFFFFFFF
 
 def murmer(x, s):
-    def rot64(a, b):
+    """
+    Compute the Murmer hash of the *k*-mer `x` with the seed `s`,
+    returning least significant 61 bits.
+
+    Although *k* is not a parameter, *k*-mers longer than 30bp are
+    not guaranteed to produce correct results.
+    """
+
+    def _rot64(a, b):
         return (a << b) | (a >> (64 - b))
 
-    def fmix64(k):
+    def _fmix64(k):
         k ^= k >> 33
         k = (k * 0xff51afd7ed558ccd) & 0xFFFFFFFFFFFFFFFF
         k ^= k >> 33
@@ -191,11 +194,11 @@ def murmer(x, s):
     h = s
     k = x
     k = (k * c1) & 0xFFFFFFFFFFFFFFFF
-    #k = rot64(k,31) & 0xFFFFFFFFFFFFFFFF
+    #k = _rot64(k,31) & 0xFFFFFFFFFFFFFFFF
     k = ((k << 31) | (k >> 33)) & 0xFFFFFFFFFFFFFFFF
     k = (k * c2) & 0xFFFFFFFFFFFFFFFF
     h ^= k
-    #h = rot64(h,27) & 0xFFFFFFFFFFFFFFFF
+    #h = _rot64(h,27) & 0xFFFFFFFFFFFFFFFF
     h = ((h << 27) | (h >> 37)) & 0xFFFFFFFFFFFFFFFF
     h = (h*5+0x52dce729) & 0xFFFFFFFFFFFFFFFF
     # fmix64
@@ -210,18 +213,18 @@ def can(k, x):
     """
     Return a canonical choice between `x` and its reverse complement.
 
-    Some implementations just choose the lexicographically less of the
-    two. For reasons of robustness, this method returns the *k*-mer with
-    the smaller FNV (see `fnv`) hash. This results in an approximately
-    uniform distribution of canonical *k*-mers, rather than the highly
-    skewed distribution that results from a lexicographically determined
-    choice.
+    Some implementations just choose the lexicographically less of
+    the two. For reasons of robustness, this method returns the
+    *k*-mer with the smaller Murmer (see `murmer`) hash. This results
+    in an approximately uniform distribution of canonical *k*-mers,
+    rather than the highly skewed distribution that results from a
+    lexicographically determined choice.
 
     Values of `k` > 30 are not guaranteed to work.
     """
-    xh = fnv(x, 17)
+    xh = murmer(x, 17)
     xb = rc(k, x)
-    xbh = fnv(xb, 17)
+    xbh = murmer(xb, 17)
     if xh <= xbh:
         return x
     else:
@@ -260,7 +263,7 @@ def kmers(k, seq, bothStrands=False):
     xb = 0
     while i + k <= z:
         while i + j < z and j < k:
-            b = nuc.get(seq[i+j], 4)
+            b = _nuc.get(seq[i+j], 4)
             if b == 4:
                 i += j + 1
                 j = 0
@@ -305,7 +308,7 @@ def kmersList(k, seq, bothStrands=False):
     res = []
     while i + k <= z:
         while i + j < z and j < k:
-            b = nuc.get(seq[i+j], 4)
+            b = _nuc.get(seq[i+j], 4)
             if b == 4:
                 i += j + 1
                 j = 0
@@ -351,7 +354,7 @@ def kmersWithPos(k, seq, bothStrands=False):
     x = 0
     while i + k <= z:
         while i + j < z and j < k:
-            b = nuc.get(seq[i+j], 4)
+            b = _nuc.get(seq[i+j], 4)
             if b == 4:
                 i += j + 1
                 j = 0

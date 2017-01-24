@@ -256,6 +256,9 @@ class suffa:
             return (r1, self.suffs[l])
 
     def cmp(self, a, b):
+        """
+        Compare the suffixes at `a` and `b` in the underlying string.
+        """
         i = a
         j = b
         while i < len(self.seq) and j < len(self.seq):
@@ -271,6 +274,10 @@ class suffa:
             return 1
 
     def cmp_str(self, s, b):
+        """
+        Compare the string `s` with the suffix at `b` in the
+        underlying string.
+        """
         i = 0
         j = b
         while i < len(s) and j < len(self.seq):
@@ -288,6 +295,10 @@ class suffa:
             return 0
 
     def lcp_suff(self, s, b):
+        """
+        Compute the longest common prefix between the string `s`
+        and the suffix at `b` in the underlying string.
+        """
         i = 0
         j = b
         while i < len(s) and j < len(self.seq):
@@ -298,6 +309,11 @@ class suffa:
         return i
 
     def lcp(self, s):
+        """
+        Compute the longest common prefix between the string `s`
+        and the suffix at `b` in the underlying string that maximizes
+        the length of the common prefix.
+        """
         l = 0
         h = len(self.suffs)
         while l < h:
@@ -340,15 +356,27 @@ class deque:
         self.rhs = []
 
     def __len__(self):
+        """
+        Return the length of the deque.
+        """
         return len(self.lhs) + len(self.rhs)
 
     def push_front(self, x):
+        """
+        Add an item to the front of the deque.
+        """
         self.lhs.append(x)
 
     def push_back(self, x):
+        """
+        Add an item to the back of the deque.
+        """
         self.rhs.append(x)
 
     def pop_front(self):
+        """
+        Remove an item from the front of the deque.
+        """
         assert len(self) > 0
         if len(self.lhs) == 0:
             self.lhs = self.rhs[::-1]
@@ -356,6 +384,9 @@ class deque:
         return self.lhs.pop()
 
     def pop_back(self):
+        """
+        Remove an item from the back of the deque.
+        """
         assert len(self) > 0
         if len(self.rhs) == 0:
             self.rhs = self.lhs[::-1]
