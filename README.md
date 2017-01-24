@@ -33,15 +33,15 @@ What is pykmer?
 
 Pykmer is a pure Python for implementing bioinformatic analysis
 with k-mer methods. The functionality includes
-    * parsing FASTA and FASTQ files
-    * extracting k-mers from reads
-    * basic computations on k-mers including
-        - reverse complements
-        - longest common prefixes
-        - Hamming distances
-    * compressed files of k-mers
-    * compressed files of (k-mer, frequency) pairs
-    * some generally useful statistical functions
+* parsing FASTA and FASTQ files
+* extracting k-mers from reads
+* basic computations on k-mers including
+** reverse complements
+** longest common prefixes
+** Hamming distances
+* compressed files of k-mers
+* compressed files of (k-mer, frequency) pairs
+* some generally useful statistical functions
 
 Why Pure Python?
 ----------------
