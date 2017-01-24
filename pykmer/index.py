@@ -43,7 +43,7 @@ class KmerIndex:
         n = z.meta['U']
         self.U = array.array('H', read16(z, 'postings', n))
         n = z.meta['lens']
-        self.lens = array.array('H', read32(z, 'postings', n))
+        self.lens = array.array('I', read32(z, 'lens', n))
         self.names = z.meta['names']
 
     def __getitem__(self, x):
@@ -88,7 +88,7 @@ def buildIndex(K, inputs, output):
         xs.sort()
         uniq(xs)
         seqs[i] = [nm, xs]
-        nms.append(len(xs))
+        lens.append(len(xs))
         S += xs
     S.sort()
     uniq(S)
