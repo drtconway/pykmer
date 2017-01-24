@@ -108,5 +108,39 @@ def openFile(fn, mode='r'):
         return p.stdin
     return open(fn, mode)
 
+_tmpfiles = []
+
+class _AutoRemover:
+    def __init__(self):
+        _tmpfiles.append(set([]))
+
+    def __enter__(self):
+        return None
+
+    def __exit__(self, _t, _v, _tb):
+        assert len(_tmpfiles) > 0
+        fns = _tmpfiles.pop()
+        for fn in fns:
+            os.remove(fn)
+
+def autoremove():
+    """
+    Enable auto-removal of temporary files.
+    Use in a with statement:
+        with autoremove():
+            my_code()
+    """
+    return _AutoRemover()
+
 def tmpfile(suffix = ''):
-    return os.getenv('TMPDIR', '/tmp') + '/' + str(uuid.uuid4()) + suffix
+    """
+    Create a unique filename for temporary storage. If auto-remove
+    is enabled (see `autoremove`), the file will be removed when
+    the __exit__() method of the autoremove object is invoked (i.e.
+    by exiting a with block).
+    """
+    fn = os.getenv('TMPDIR', '/tmp') + '/' + str(uuid.uuid4()) + suffix
+    if len(_tmpfiles):
+        _tmpfiles[-1].add(fn)
+    return fn
+
