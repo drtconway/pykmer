@@ -9,6 +9,7 @@ to be in a line oriented form (which is usually true).
 __docformat__ = 'restructuredtext'
 
 import os
+import os.path
 import subprocess
 import uuid
 
@@ -121,7 +122,8 @@ class _AutoRemover:
         assert len(_tmpfiles) > 0
         fns = _tmpfiles.pop()
         for fn in fns:
-            os.remove(fn)
+            if os.path.isfile(fn):
+                os.remove(fn)
 
 def autoremove():
     """
