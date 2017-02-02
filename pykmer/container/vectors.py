@@ -39,6 +39,12 @@ class GenericWriter:
         if len(self.a) == blockSize:
             self.flush()
 
+    def appendBlock(self, xs):
+        self.n += 1
+        self.a.extend(xs)
+        if len(self.a) >= blockSize:
+            self.flush()
+
     def flush(self):
         s = self.a.tostring()
         v = struct.pack('L', len(s))
@@ -126,4 +132,33 @@ def read32s(z, nm, n):
 
 def read16(z, nm, n):
     return readGeneric(z, nm, n, 'H')
+
+def readGenericBlock(z, nm, n, w):
+    """
+    """
+    W = struct.calcsize('L')
+    with z.open(nm) as f:
+        while n > 0:
+            v = f.read(W)
+            if len(v) != W:
+                break
+            l = struct.unpack('L', v)[0]
+            s = f.read(l)
+            assert len(s) == l
+            a = array.array(w, [])
+            a.fromstring(s)
+            yield a
+            n -= m
+
+def read64block(z, nm, n):
+    return readGenericBlock(z, nm, n, 'L')
+
+def read32block(z, nm, n):
+    return readGenericBlock(z, nm, n, 'I')
+
+def read32sblock(z, nm, n):
+    return readGenericBlock(z, nm, n, 'i')
+
+def read16block(z, nm, n):
+    return readGenericBlock(z, nm, n, 'H')
 
