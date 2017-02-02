@@ -84,10 +84,10 @@ class sparse:
         """
         assert x0 <= x1
         r0 = self.rank(x0)
-        r1 = len(self.xs)
-        for r1 in xrange(r0, len(self.xs)):
-            if self.xs[r1] >= x1:
-                break
+        z = len(self.xs)
+        r1 = r0
+        while r1 < z and self.xs[r1] < x1:
+            r1 += 1
         return (r0, r1)
 
     def access(self, x):

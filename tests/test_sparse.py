@@ -13,7 +13,7 @@ def test_rank1():
     random.seed(17)
     K = 27
     M = (1 << (2*K)) - 1
-    N = 1000
+    N = 10000
     xs = set([])
     for i in xrange(N):
         xs.add(random.randint(0, M))
@@ -29,7 +29,7 @@ def test_rank1():
     random.seed(17)
     K = 27
     M = (1 << (2*K)) - 1
-    N = 1000
+    N = 10000
     xs = set([])
     for i in xrange(N):
         xs.add(random.randint(0, M))
@@ -46,7 +46,7 @@ def test_rank1():
         assert s == r + 1
 
     for i in xrange(N):
-        x = random.random(0, M)
+        x = random.randint(0, M)
         while x in xs:
             x = (x + random.randint(1, M)) & M
         a = S.access(x)
