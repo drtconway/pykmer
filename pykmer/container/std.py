@@ -223,6 +223,9 @@ def readKmersAndCountsBlock(z, nm=None):
             blk = []
             n = 0
 
+    if n > 0:
+        yield blk
+
     assert moreXs == False
     assert moreYs == False
 
