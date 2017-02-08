@@ -94,6 +94,13 @@ class container:
         assert self.z is not None
         self.z.writestr(fn, bytes)
 
+    def write(self, zfn, fn, comp = False):
+        assert self.z is not None
+        flg = zipfile.ZIP_STORED
+        if comp:
+            flg = zipfile.ZIP_DEFLATED
+        self.z.write(fn, zfn, flg)
+
     def open(self, fn):
         return self.z.open(fn)
 
