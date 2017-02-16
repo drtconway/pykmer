@@ -49,7 +49,7 @@ class MultipleOpenFiles(Exception):
 
 _block_size_ = 1024*1024 # 1MB
 
-class CasketReader:
+class CasketReader(object):
     def __init__(self, fo, p, l):
         self.fo = fo
         self.p = p
@@ -76,7 +76,7 @@ class CasketReader:
 
         return w
 
-class CasketStreamWriter:
+class CasketStreamWriter(object):
     def __init__(self, ar, afn):
         self.ar = ar
         self.afn = afn
@@ -110,7 +110,7 @@ class CasketStreamWriter:
             self.close()
         return True
 
-class casket:
+class casket(object):
     def __init__(self, fn, mode='r'):
         self.fn = fn
         self.mode = mode
@@ -125,6 +125,7 @@ class casket:
             self.toc = {}
             self.stale = True
             self.fip = None
+        print fn, self.toc
 
     def list(self):
         """

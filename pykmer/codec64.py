@@ -39,6 +39,46 @@ for i in xrange(1, W+1):
     else:
         _lookup[i] = _lookup[i - 1]
 
+class encoder:
+    def __init__(self):
+        self.stk = []
+        self.n = 0
+        self.mw = 0
+
+    def append(self, x):
+        wx = x.bit_length()
+        mwx = max(wx, self.mw)
+        if self.n == W or mwx > _lookup[self.n+1][0] or self.n >= _lookup[self.n+1][1]:
+            (b, m0) = _lookup[self.n]
+            m = m0
+            v = 0
+            while m > 0:
+                m -= 1
+                v = (v << b) | self.stk[m]
+            v = (v << 4) | m0
+            self.write(v)
+            del self.stk[0:m0]
+            self.n = len(self.stk)
+            if self.n > 0:
+                self.mw = max([y.bit_length() for y in self.stk])
+                mwx = max(wx, self.mw)
+            else:
+                mwx = wx
+        self.stk.append(x)
+        self.n += 1
+        self.mw = mwx
+
+    def end(self):
+        if self.n > 0:
+            (b, m0) = _lookup[self.n]
+            m = m0
+            v = 0
+            while m > 0:
+                m -= 1
+                v = (v << b) | self.stk[m]
+            v = (v << 4) | m0
+            self.write(v)
+
 def encode(xs):
     """
     Encode a sequence of integers in the range [0,2^60) yielding a
