@@ -94,7 +94,7 @@ class heap:
         """
         return len(self.xs)
 
-    def heapify():
+    def heapify(self):
         """
         Modify the data structure to impose the heap invariant.
 
@@ -134,7 +134,7 @@ class heap:
         x = self.xs[0]
         y = self.xs.pop()
         if len(self.xs) > 0:
-            self.modify(y)
+            self.modifyfront(y)
         return x
 
     def front(self):
@@ -159,7 +159,8 @@ class heap:
         It is an error to invoke this method on an empty heap.
         """
         assert len(self.xs) > 0
-        self.xs[0] = x
+        if x is not None:
+            self.xs[0] = x
         self.downheap(1)
 
     def upheap(self, i):
@@ -392,4 +393,30 @@ class deque:
             self.rhs = self.lhs[::-1]
             self.lhs = []
         return self.rhs.pop()
+
+class radix_sort(object):
+    def __init__(self, bits, xs):
+        self.bits = bits
+        self.xs = xs
+        if len(self.xs) <= 1024:
+            self.xs.sort()
+            return
+        self.pos = 0
+        self.sort(0, self.xs)
+
+    def sort(self, d, xs):
+        if d*8 >= self.bits or len(xs) <= 1024:
+            xs.sort()
+            if xs is not self.xs:
+                for x in xs:
+                    self.xs[self.pos] = x
+                    self.pos += 1
+            return
+        s = self.bits - (d + 1)*8
+        ps = [[] for i in xrange(256)]
+        for x in xs:
+            p = (x >> s) & 255
+            ps[p].append(x)
+        for p in ps:
+            self.sort(d + 1, p)
 

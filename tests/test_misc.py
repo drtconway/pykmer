@@ -47,3 +47,15 @@ def test_uniq_many():
     assert len(xs) == len(ys)
     for i in xrange(len(xs)):
         assert xs[i] == ys[i]
+
+def test_radix_sort():
+    random.seed(17)
+    N = 16*1024*1024
+    K = 27
+    M = (1 << (2*K)) - 1
+    xs = []
+    for i in xrange(N):
+        xs.append(random.randint(0, M))
+    misc.radix_sort(2*K, xs)
+    for i in xrange(1, N):
+        assert xs[i - 1] <= xs[i]
