@@ -398,14 +398,14 @@ class radix_sort(object):
     def __init__(self, bits, xs):
         self.bits = bits
         self.xs = xs
-        if len(self.xs) <= 1024:
+        if len(self.xs) <= 16384:
             self.xs.sort()
             return
         self.pos = 0
         self.sort(0, self.xs)
 
     def sort(self, d, xs):
-        if d*8 >= self.bits or len(xs) <= 1024:
+        if d >= 2 or (d+1)*8 >= self.bits or len(xs) <= 16384:
             xs.sort()
             if xs is not self.xs:
                 for x in xs:
