@@ -89,21 +89,25 @@ def openFile(fn, mode='r'):
             return sys.stdin
         if fn.endswith(".gz"):
             p = subprocess.Popen(['gunzip', '-c', fn],
+                                 bufsize=1024*1024,
                                  stdout=subprocess.PIPE)
             return p.stdout
         if fn.endswith(".bz2"):
             p = subprocess.Popen(['bunzip2', '-c', fn],
+                                 bufsize=1024*1024,
                                  stdout=subprocess.PIPE)
     if mode == 'w':
         if fn == "-":
             return sys.stdout
         if fn.endswith(".gz"):
             p = subprocess.Popen(['gzip', '-9', '-', '>', fn],
+                                 bufsize=1024*1024,
                                  stdin=subprocess.PIPE,
                                  shell=True)
             return p.stdin
         if fn.endswith(".bz2"):
             p = subprocess.Popen(['bzip2', '-9', '-', '>', fn],
+                                 bufsize=1024*1024,
                                  stdout=subprocess.PIPE,
                                  shell=True)
         return p.stdin
