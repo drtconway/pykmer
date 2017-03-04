@@ -125,7 +125,6 @@ class casket(object):
             self.toc = {}
             self.stale = True
             self.fip = None
-        print fn, self.toc
 
     def list(self):
         """
