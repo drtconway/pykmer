@@ -133,3 +133,19 @@ def decode(ws):
             yield (w & msk)
             w >>= b
             m0 -= 1
+
+def decodeList(ws):
+    """
+    Take a sequence of 64-bit code words and decode them to produce a list of integers.
+    """
+    xs = []
+    for w in ws:
+        m0 = w & 15
+        w >>= 4
+        b = _codes[m0]
+        msk = (1 << b) - 1
+        while m0 > 0:
+            xs.append(w & msk)
+            w >>= b
+            m0 -= 1
+    return xs
