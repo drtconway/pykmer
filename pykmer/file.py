@@ -110,7 +110,7 @@ def openFile(fn, mode='r'):
                                  bufsize=1024*1024,
                                  stdout=subprocess.PIPE,
                                  shell=True)
-        return p.stdin
+            return p.stdin
     return open(fn, mode)
 
 _tmpfiles = []
