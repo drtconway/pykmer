@@ -8,6 +8,8 @@ to be in a line oriented form (which is usually true).
 
 __docformat__ = 'restructuredtext'
 
+import bz2
+import gzip
 import os
 import os.path
 import subprocess
@@ -100,17 +102,11 @@ def openFile(fn, mode='r'):
         if fn == "-":
             return sys.stdout
         if fn.endswith(".gz"):
-            p = subprocess.Popen(['gzip', '-9', '-', '>', fn],
-                                 bufsize=1024*1024,
-                                 stdin=subprocess.PIPE,
-                                 shell=True)
-            return p.stdin
+            # slower than we'd like, but stable
+            return gzip.open(fn, 'wb')
         if fn.endswith(".bz2"):
-            p = subprocess.Popen(['bzip2', '-9', '-', '>', fn],
-                                 bufsize=1024*1024,
-                                 stdout=subprocess.PIPE,
-                                 shell=True)
-            return p.stdin
+            # slower than we'd like, but stable
+            return bz2.open(fn, 'wb')
     return open(fn, mode)
 
 _tmpfiles = []
