@@ -327,6 +327,51 @@ def kmersList(k, seq, bothStrands=False):
         i += 1
     return res
 
+def kmersLists(k, seq):
+    """
+    Extract *k*-mers from a string nucleotide sequence `seq` and
+    return the forward and reverse complement k-mers in separate
+    lists.
+
+    The *k*-mers are extracted using a *sliding* window, not a
+    *tiling* window.  This means that the results include the *k*-mer
+    starting at each position in the string:
+        0, 1, 2, ...., len(str) - k + 1.
+
+    Any *k*-mers overlaying characters *other* than AaCcGgTtUu are
+    skipped.
+
+    Values of `k` > 30 are not guaranteed to work.
+    """
+    z = len(seq)
+    msk = (1 << (2*k)) - 1
+    s = 2*(k-1)
+    i = 0
+    j = 0
+    x = 0
+    xb = 0
+    resFwd = []
+    resRev = []
+    while i + k <= z:
+        while i + j < z and j < k:
+            b = _nuc.get(seq[i+j], 4)
+            if b == 4:
+                i += j + 1
+                j = 0
+                x = 0
+                xb = 0
+            else:
+                x = (x << 2) | b
+                xb = (xb >> 2) | ((3 - b) << s)
+                j += 1
+        if j == k:
+            x &= msk
+            resFwd.append(x)
+            resRev.append(xb)
+            j -= 1
+        i += 1
+    return (resFwd, resRev)
+
 def kmersWithPos(k, seq, bothStrands=False):
     """
     Extract *k*-mers from a string nucleotide sequence `seq`.
