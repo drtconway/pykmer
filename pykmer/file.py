@@ -13,6 +13,7 @@ import gzip
 import os
 import os.path
 import subprocess
+import sys
 import uuid
 
 def readFasta(file):
