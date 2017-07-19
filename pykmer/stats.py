@@ -12,11 +12,23 @@ http://www.fysik.su.se/~walck/suf9601.pdf
 import math
 import sys
 
+def log1pexp(x):
+    x0 = -37
+    x1 = 18.0
+    x2 = 33.3
+    if x <= x0:
+        return math.exp(x)
+    if x <= x1:
+        return math.log1p(exp(x))
+    if x <= x2:
+        return x + math.exp(-x)
+    return x
+
 def log1mexp(a):
     """
     return log(1 - exp(a))
     """
-    if a < 0.6931472:
+    if -a < 0.6931472:
         return math.log(-math.expm1(a))
     else:
         return math.log1p(-math.exp(a))
@@ -137,7 +149,11 @@ def logGammaP(a, x):
 
     P(a, x) = lowerGamma(a, x)/gamma(a)
     """
-    return logLowerGamma(a, x) - logGamma(a)
+    num = logLowerGamma(a, x)
+    den = logGamma(a)
+    if den > num:
+        return num - den
+    return 0.0
 
 def gammaP(a, x):
     """
@@ -153,7 +169,8 @@ def logGammaQ(a, x):
 
     P(a, x) = upperGamma(a, x)/gamma(a)
     """
-    return log1mexp(logGammaP(a, x))
+    lgp = min(logGammaP(a, x), -1e-300)
+    return log1mexp(lgp)
 
 def gammaQ(a, x):
     """
