@@ -78,14 +78,17 @@ class unionfind:
             self.parent[yr] = xr
             self.rank[xr] += 1
 
-class heap:
-    def __init__(self, xs = []):
+class heap(object):
+    def __init__(self, xs = None):
         """
         Create an empty heap. If given, `xs` should be a list of items
         to become the body of the heap, to be reordered according to
         the heap invariant.
         """
-        self.xs = xs
+        if xs is not None:
+            self.xs = xs
+        else:
+            self.xs = []
         self.heapify()
 
     def __len__(self):

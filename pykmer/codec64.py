@@ -39,7 +39,7 @@ for i in xrange(1, W+1):
     else:
         _lookup[i] = _lookup[i - 1]
 
-class encoder:
+class encoder(object):
     def __init__(self):
         self.stk = []
         self.n = 0
