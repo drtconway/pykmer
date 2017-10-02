@@ -240,7 +240,7 @@ def counts2pdf(xs):
     """
     Convert the vector of counts `xs` to a discrete PDF.
     """
-    n = sum(xs)
+    n = max(1, sum(xs))
     return [float(x)/n for x in xs]
 
 def counts2cdf(xs):
