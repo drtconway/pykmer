@@ -13,7 +13,7 @@ class PyTest(TestCommand):
         pytest.main(self.test_args)
 
 setup(name='pykmer',
-        version='0.3.0',
+        version='0.4.0',
         description='A pure python k-mer sequence analysis toolkit',
         url='http://github.com/drtconway/pykmer',
         author='Tom Conway',

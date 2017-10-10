@@ -476,3 +476,47 @@ def kmersWithPosList(k, seq, bothStrands=False):
         i += 1
     return res
 
+def kmersWithPosLists(k, seq):
+    """
+    Extract *k*-mers from a string nucleotide sequence `seq`.
+    The parameter `bothStrands` determines whether the sequence of
+    result *k*-mers should include the reverse complement of each *k*-mer
+    extracted from the string.
+
+    The *k*-mers are returned in a tuple with the position in the sequence
+    of the left-most base (i.e. most significant bits). Positions are
+    numbered from 1. The k-mer and position pairs from the forward and
+    reverse complement strands are returned in two separate lists.
+
+    Any *k*-mers overlaying characters *other* than AaCcGgTtUu are skipped.
+
+    Values of `k` > 30 are not guaranteed to work.
+    """
+    fwdRes = []
+    revRes = []
+    z = len(seq)
+    msk = (1 << (2*k)) - 1
+    s = 2*(k-1)
+    i = 0
+    j = 0
+    x = 0
+    xb = 0
+    while i + k <= z:
+        while i + j < z and j < k:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
+                i += j + 1
+                j = 0
+                x = 0
+                xb = 0
+            else:
+                x = (x << 2) | b
+                xb = (xb >> 2) | ((3 - b) << s)
+                j += 1
+        if j == k:
+            x &= msk
+            fwdRes.append((x, i+1))
+            revRes.append((xb, z - i - k + 1))
+            j -= 1
+        i += 1
+    return (fwdRes, revRes)
