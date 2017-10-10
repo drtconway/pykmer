@@ -40,14 +40,22 @@ __docformat__ = 'restructuredtext'
 from pykmer.bits import ffs, rev, popcnt, m1
 
 _nuc = { 'A':0, 'a':0, 'C':1, 'c':1, 'G':2, 'g':2, 'T':3, 't':3, 'U':3, 'u':3 }
+_nucList = [None for i in range(256)]
+for (c,v) in _nuc.items():
+    _nucList[ord(c)] = v
+_nucTup = tuple(_nucList)
 
 def kmer(seq):
     "Turn a string `seq` into an integer k-mer"
     r = 0
-    for c in seq:
-        if c not in _nuc:
+    L = len(seq)
+    i = 0
+    while i < L:
+        b = _nucTup[ord(seq[i])]
+        if b is None:
             return None
-        r = (r << 2) | _nuc[c]
+        r = (r << 2) | b
+        i += 1
     return r
 
 def render(k, x):
@@ -263,8 +271,8 @@ def kmers(k, seq, bothStrands=False):
     xb = 0
     while i + k <= z:
         while i + j < z and j < k:
-            b = _nuc.get(seq[i+j], 4)
-            if b == 4:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
                 i += j + 1
                 j = 0
                 x = 0
@@ -308,8 +316,8 @@ def kmersList(k, seq, bothStrands=False):
     res = []
     while i + k <= z:
         while i + j < z and j < k:
-            b = _nuc.get(seq[i+j], 4)
-            if b == 4:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
                 i += j + 1
                 j = 0
                 x = 0
@@ -354,8 +362,8 @@ def kmersLists(k, seq):
     resRev = []
     while i + k <= z:
         while i + j < z and j < k:
-            b = _nuc.get(seq[i+j], 4)
-            if b == 4:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
                 i += j + 1
                 j = 0
                 x = 0
@@ -401,8 +409,8 @@ def kmersWithPos(k, seq, bothStrands=False):
     xb = 0
     while i + k <= z:
         while i + j < z and j < k:
-            b = _nuc.get(seq[i+j], 4)
-            if b == 4:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
                 i += j + 1
                 j = 0
                 x = 0
@@ -449,8 +457,8 @@ def kmersWithPosList(k, seq, bothStrands=False):
     xb = 0
     while i + k <= z:
         while i + j < z and j < k:
-            b = _nuc.get(seq[i+j], 4)
-            if b == 4:
+            b = _nucTup[ord(seq[i+j])]
+            if b is None:
                 i += j + 1
                 j = 0
                 x = 0
