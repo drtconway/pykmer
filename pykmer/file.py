@@ -108,6 +108,16 @@ def openFile(fn, mode='r'):
         if fn.endswith(".bz2"):
             # slower than we'd like, but stable
             return bz2.open(fn, 'wb')
+
+    if mode == 'a':
+        if fn == "-":
+            return sys.stdout
+        if fn.endswith(".gz"):
+            # slower than we'd like, but stable
+            return gzip.open(fn, 'ab')
+        if fn.endswith(".bz2"):
+            # slower than we'd like, but stable
+            return bz2.open(fn, 'ab')
     return open(fn, mode)
 
 _tmpfiles = []
